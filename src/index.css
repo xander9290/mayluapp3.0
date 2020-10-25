@@ -1,0 +1,79 @@
+.main {
+    background-image: url("./logotipo.png");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .list-items {
+    height: 350px;
+    overflow-y: auto;
+  }
+  .list-items li:hover {
+    cursor: default;
+  }
+  .list-items-table {
+    height: 560px !important;
+    overflow-y: auto;
+  }
+  .main {
+    height: 90vh;
+  }
+  .cursor {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  form[disabled] {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+  .puntoventa-container {
+    height: 85vh !important;
+  }
+  .contenedor-scroll-y {
+    overflow-y: auto;
+  }
+  .card-body-items {
+    height: 300px !important;
+  }
+  .modal-captura {
+    max-width: 97% !important;
+  }
+  .card-captura {
+    height: 570px !important;
+  }
+  .scroll-x {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .categorias-captura button {
+    height: 50px;
+  }
+  .subcategoria-container, .modificadores-container {
+   white-space: nowrap;
+  }
+  .subcategoria-container button, .productos-container button, .modificadores-container button {
+    width: 125px;
+    height: 50px;
+    white-space: normal;
+  }
+  
+  /* DISPLAY CONTADORO */
+  .input-contador, .txtDscto {
+    width: 70px !important;
+  }
+  .input-pagar {
+    width: 85px !important;
+  
+  }
+  .table-body-items tr:hover, .table-body-cuenta-items tr:hover {
+    cursor: pointer;
+    background-color: rgba(16, 51, 168, 0.116);
+    color: black;
+  }
+  .table-body-items tr:last-child {
+    background-color: rgba(49, 97, 255, 0.5);
+    color: black;
+  }
+  .select-item {
+    background-color: rgba(49, 97, 255, 0.5);
+    color: black;
+  }

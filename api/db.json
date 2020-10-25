@@ -1,0 +1,74 @@
+{
+  "areas": [],
+  "categorias": [],
+  "subcategorias": [],
+  "productos": [],
+  "clientes": [],
+  "operadores": [
+    {
+      "name": "admin",
+      "pswd": "admin",
+      "rol": "master",
+      "id": 1
+    }
+  ],
+  "cuentas": [],
+  "logs": [
+    {
+      "createdAt": "2020-10-25T07:32:37.656Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 1
+    },
+    {
+      "createdAt": "2020-10-25T07:38:03.251Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 2
+    },
+    {
+      "createdAt": "2020-10-25T08:08:01.508Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 3
+    },
+    {
+      "createdAt": "2020-10-25T08:12:28.932Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 4
+    },
+    {
+      "createdAt": "2020-10-25T08:24:48.473Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 5
+    },
+    {
+      "createdAt": "2020-10-25T08:25:11.139Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 6
+    },
+    {
+      "createdAt": "2020-10-25T08:41:05.611Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 7
+    },
+    {
+      "createdAt": "2020-10-25T08:41:37.565Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 8
+    },
+    {
+      "createdAt": "2020-10-25T08:42:12.131Z",
+      "operador": "admin",
+      "commit": "Ha iniciado sesión",
+      "id": 9
+    }
+  ],
+  "cajas": [],
+  "items": []
+}
