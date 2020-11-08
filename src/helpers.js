@@ -1,17 +1,17 @@
+import axios from "axios";
+
 // export const apiURI = "http://localhost:4000";
 export const apiURI = "http://localhost:3001";
-
 export const operadorSession = window.sessionStorage.getItem("operador");
 export const operadorRol = window.sessionStorage.getItem("operadorRol");
 
-export const fechaActual = (date) => {
-  let d = new Date(date),
+export const fechaActual = () => {
+  let d = new Date(Date.now()),
     ano = d.getFullYear(),
     mes = d.getMonth() + 1,
     dia = d.getDate(),
     str = "";
   str = `${ano}-${mes < 10 ? "0" + mes : mes}-${dia < 10 ? "0" + dia : dia}`;
-  if (!date) str = "";
   return str;
 };
 
@@ -30,6 +30,59 @@ export const formatDate = (date) => {
 
 export const fechaISO = () => {
   return new Date(Date.now()).toISOString();
+};
+
+export const commit = async (commit, operador) => {
+  await axios.post(apiURI + "/logs", {
+    createdAt: fechaISO(),
+    fecha: fechaActual(),
+    operador: operador,
+    commit,
+  });
+};
+
+export const cuentaConstructor = {
+  folio: null,
+  orden: null,
+  torreta: "",
+  personas: 1,
+  servicio: "",
+  cliente: {
+    name: "",
+    tel: "",
+    address: {
+      calle: "",
+      cruces: "",
+      colonia: "",
+      obs: ""
+    },
+    id: 0
+  },
+  estado: "abierto",
+  impreso: false,
+  items: [],
+  importe: 0,
+  dscto: 0,
+  total: 0,
+  efectivo: 0,
+  tarjeta: 0,
+  cambio: 0,
+  createdAt: fechaISO(),
+  createdBy: operadorSession,
+  closedAt: "",
+  fecha: fechaActual(Date.now()),
+  id: null,
+};
+
+export const processImporte = {
+  totalItems: function (list = [],dscto) {
+    let total = 0;
+    list.map((item) => {
+      total += item.importe;
+    });
+    let totalCuenta = total - parseInt(dscto);
+    return { importe: total, total: totalCuenta };
+  }
 };
 
 export const numeroALetras = (function () {
@@ -166,7 +219,7 @@ export const numeroALetras = (function () {
     let strMiles = Seccion(num, divisor, "UN MIL", "MIL");
     let strCentenas = Centenas(resto);
 
-    if (strMiles == "") return strCentenas;
+    if (strMiles === "") return strCentenas;
 
     return strMiles + " " + strCentenas;
   } //Miles()
@@ -179,7 +232,7 @@ export const numeroALetras = (function () {
     let strMillones = Seccion(num, divisor, "UN MILLON DE", "MILLONES DE");
     let strMiles = Miles(resto);
 
-    if (strMillones == "") return strMiles;
+    if (strMillones === "") return strMiles;
 
     return strMillones + " " + strMiles;
   } //Millones()
@@ -201,7 +254,7 @@ export const numeroALetras = (function () {
       data.letrasCentavos =
         "CON " +
         (function () {
-          if (data.centavos == 1)
+          if (data.centavos === 1)
             return (
               Millones(data.centavos) + " " + data.letrasMonedaCentavoSingular
             );
@@ -212,9 +265,9 @@ export const numeroALetras = (function () {
         })();
     }
 
-    if (data.enteros == 0)
+    if (data.enteros === 0)
       return "CERO " + data.letrasMonedaPlural + " " + data.letrasCentavos;
-    if (data.enteros == 1)
+    if (data.enteros === 1)
       return (
         Millones(data.enteros) +
         " " +

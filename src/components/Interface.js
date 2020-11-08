@@ -1,7 +1,8 @@
 import { Fragment } from "react";
-import { operadorSession, operadorRol, fechaActual } from "../helpers";
+import { operadorSession, operadorRol, fechaActual, commit } from "../helpers";
 
 import Puntoventa from "./Puntoventa";
+import Config from "./Config";
 
 export default function Interface() {
   return (
@@ -23,6 +24,7 @@ export default function Interface() {
 function Nav() {
   const logout = (e) => {
     e.preventDefault();
+    commit("ha cerrado sesion",operadorSession);
     window.sessionStorage.clear();
     window.location.href = "http://localhost:3000";
   };
@@ -48,7 +50,7 @@ function Nav() {
             href="#config"
             data-toggle="pill"
           >
-            configuración
+            administración
           </a>
         </li>
       </ul>
@@ -82,7 +84,7 @@ function Main() {
         <Puntoventa />
       </div>
       <div className="tab-pane fade container-fluid" id="config">
-        <h1>config</h1>
+        <Config />
       </div>
     </div>
   );

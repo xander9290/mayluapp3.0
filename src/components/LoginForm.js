@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { apiURI, fechaISO } from "../helpers";
+import { apiURI, fechaActual, fechaISO, commit, operadorSession } from "../helpers";
 import axios from "axios";
+import bcrypt from "bcryptjs";
 
 export default function LoginForm() {
   const [operadores, setOperadores] = useState([]);
-  const [err, setErr] = useState("");
+  const [err, setErr] = useState("-");
   const [values, setValues] = useState({
     pswd: "",
     name: "",
@@ -28,21 +29,20 @@ export default function LoginForm() {
 
   const handlelogin = async (e) => {
     e.preventDefault();
-    const operador = operadores.find(
-      (o) => o.name === values.name && o.pswd === values.pswd
-    );
+    const operador = operadores.find((o) => o.name === values.name);
     if (operador) {
-      await axios.post(apiURI + "/logs", {
-        createdAt: fechaISO(),
-        operador: operador.name,
-        commit: "Ha iniciado sesión",
-      });
-      window.sessionStorage.setItem("operador",operador.name);
-      window.sessionStorage.setItem("operadorRol",operador.rol);
-      window.location.href="http://localhost:3000";
+      const pswd = operador.pswd,
+        match = await bcrypt.compare(values.pswd, pswd);
+        if(match) {
+          commit("ha iniciado sesión",operador.name);
+          window.sessionStorage.setItem("operador", operador.name);
+          window.sessionStorage.setItem("operadorRol", operador.rol);
+          window.location.href = "http://localhost:3000";  
+        } else {
+          setErr("Operador o contraseña incorrecto")
+        }
     } else {
-      setErr("operador o contraseña incorrecto");
-      inputPwsd.current.focus();
+      setErr("Operador o contraseña incorrecto");
     }
   };
 
@@ -75,6 +75,7 @@ export default function LoginForm() {
                 <input
                   type="password"
                   name="pswd"
+                  maxLength="4"
                   ref={inputPwsd}
                   value={values.pswd}
                   onChange={onvalue}

@@ -1,5 +1,11 @@
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, Fragment } from "react";
 import { operadorRol } from "../helpers";
+
+import Comedor from "./puntoventacomponents/Comedor";
+import Domicilio from "./puntoventacomponents/Domicilio";
+import Cerradas from "./puntoventacomponents/Cerradas";
+import Caja from "./puntoventacomponents/Caja";
+import Monitor from "./puntoventacomponents/Monitor";
 
 export default function Puntoventa() {
   const [changeservicio, setChangeservicio] = useState("");
@@ -10,7 +16,7 @@ export default function Puntoventa() {
   return (
     <Fragment>
       <div className="row">
-        <small>
+        <small className="col-md-12 p-0">
           <ul className="nav nav-pills navbar-dark bg-dark">
             <li className="nav-item">
               <a
@@ -72,6 +78,28 @@ export default function Puntoventa() {
             </li>
           </ul>
         </small>
+      </div>
+      <div className="row">
+        <div className="tab-content col-md-12 p-0">
+          <div
+            className="tab-pane fade show active container-fluid"
+            id="comedor"
+          >
+            <Comedor changeservicio={changeservicio} />
+          </div>
+          <div className="tab-pane fade show container-fluid" id="domicilio">
+            <Domicilio changeservicio={changeservicio} />
+          </div>
+          <div className="tab-pane fade show container-fluid" id="cerradas">
+            <Cerradas changeservicio={changeservicio} />
+          </div>
+          <div className="tab-pane fade show container-fluid" id="caja">
+            <Caja changeservicio={changeservicio} />
+          </div>
+          <div className="tab-pane fade show container-fluid" id="monitor">
+            <Monitor changeservicio={changeservicio} />
+          </div>
+        </div>
       </div>
     </Fragment>
   );
