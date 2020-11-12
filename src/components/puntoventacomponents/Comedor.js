@@ -134,7 +134,9 @@ export default function Comedor(props) {
   const deleteItem = async (idx, importe) => {
     if (window.confirm("CONFIRMAR ACCIÓN")) {
       let list = cuenta.items;
-      list.splice(idx, 1);
+      // list.splice(idx, 1);
+      list[idx].cancelado = true;
+      list[idx].importe = 0;
       const data = {
         ...cuenta,
         items: list,
@@ -321,13 +323,16 @@ export default function Comedor(props) {
                 {!cuenta.items
                   ? null
                   : cuenta.items.map((item, i) => (
-                      <tr key={i}>
+                      <tr className={item.cancelado ? "bg-danger" : ""} key={i}>
                         <th className="text-center">
                           <button
                             onClick={() => deleteItem(i, item.importe)}
                             type="button"
                             className="btn btn-danger btn-sm"
                             disabled={cuenta.impreso ? true : false}
+                            style={{
+                              display: item.cancelado ? "none" : "block",
+                            }}
                           >
                             &times;
                           </button>
@@ -336,7 +341,7 @@ export default function Comedor(props) {
                           {item.cant}
                         </td>
                         <td className="text-left font-weight-bold lead">
-                          <p className="m-0 p-0">{item.name}</p>
+                          <p className="m-0 p-0">{item.name} {item.cancelado ? "(X)" : ""}</p>
                           <small>
                             {item.modificadores.map((m, i) => (
                               <p key={i} className="p-0 m-0">
@@ -474,13 +479,9 @@ function CuentaItem(props) {
       if (diff < 10) {
         setBg("badge badge-success text-success");
       } else if (diff < 15) {
-        setBg(
-          "badge badge-warning text-warning"
-        );
+        setBg("badge badge-warning text-warning");
       } else if (diff < 20) {
-        setBg(
-          "badge badge-danger text-danger"
-        );
+        setBg("badge badge-danger text-danger");
       }
     }, 1000);
   };
@@ -490,21 +491,14 @@ function CuentaItem(props) {
       key={cuenta.id}
       type="button"
       onClick={() => selectCuenta(cuenta.id)}
-      className={
-        cuenta.impreso
-          ? "list-group-item list-group-item-action my-1 font-weight-bold bg-dark text-light border-light"
-          : "list-group-item list-group-item-action my-1 font-weight-bold border-light"
-      }
+      className="list-group-item list-group-item-action my-1 font-weight-bold border-light"
     >
       <small className="d-flex justify-content-between align-content-center text-uppercase font-weight-bold">
         <span>{cuenta.torreta}</span>
         <span>{cuenta.servicio}</span>
         <span>orden: {cuenta.orden}</span>
-        {cuenta.impreso ? (
-          <span>&#128438;</span>
-        ) : (
-          <span className={bg}>{"------"}</span>
-        )}
+        {cuenta.impreso ? <span>&#128438;</span> : null}
+        <span className={bg}>{"------"}</span>
       </small>
     </button>
   );

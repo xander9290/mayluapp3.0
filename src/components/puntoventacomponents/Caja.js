@@ -7,6 +7,7 @@ import {
   apiURI,
   commit,
 } from "../../helpers";
+import printer from "node-thermal-printer";
 
 import CajaModal from "../modals/Caja";
 
@@ -21,6 +22,10 @@ export default function Caja(props) {
     concepto: "",
     importe: "",
   });
+
+  const imprimir = () => {
+    
+  }
 
   useEffect(() => {
     loadcajas();
@@ -189,6 +194,9 @@ export default function Caja(props) {
         caja={caja}
         setCaja={setCaja}
       />
+      <div className="col-md-1">
+        <button onClick={imprimir} type="button" className="btn btn-warning btn-lg">imprimir</button>
+      </div>
     </div>
   );
 }

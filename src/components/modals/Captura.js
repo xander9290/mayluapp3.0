@@ -140,6 +140,7 @@ export default function CapturaModal(props) {
         contable: producto.contable,
         createdAt: fechaISO(),
         createdBy: operadorSession,
+        cancelado: false,
       };
       setItems([...items, data]);
     }

@@ -109,14 +109,13 @@ export default function ComandaModal(props) {
       keyboard="true"
     >
       <div id="comandaVista">
-        <br></br>
-        <div id="logoContainer">
+        <div style={{ display: comanda ? "none" : "block" }} id="logoContainer">
           <div id="logo">
             <h3 id="logoNameTitle">maylu</h3>
             <h5 id="logoSubName">sushi</h5>
           </div>
         </div>
-        <div id="infoEmpresa">
+        <div style={{ display: comanda ? "none" : "block" }} id="infoEmpresa">
           <p>manuel mena #3870</p>
           <p>colonia polanco, c.p. 44960</p>
           <p id="tel">tel: 3333675283</p>
@@ -162,7 +161,12 @@ export default function ComandaModal(props) {
               {!cuenta.items
                 ? null
                 : cuenta.items.map((item, i) => (
-                    <tr key={i}>
+                    <tr
+                      style={{
+                        display: item.cancelado ? "none" : ""
+                      }}
+                      key={i}
+                    >
                       <td valign="top">{item.cant}</td>
                       <td>
                         <p>{item.name}</p>
@@ -210,7 +214,7 @@ export default function ComandaModal(props) {
             })}
           </small>
           <hr></hr>
-          <div id="footer">
+          <div style={{ display: comanda ? "none" : "block" }} id="footer">
             <p>**gracias por su compra**</p>
             <small>
               <p>consulte nuestro menú por whatsapp</p>

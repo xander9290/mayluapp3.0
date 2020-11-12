@@ -85,7 +85,7 @@ export default function Cerradas(props) {
       await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
       loadcuentas();
       setCuenta(cuentaConstructor);
-      commit("ha reabierto la cuenta cerrada " + cuenta.orden, operadorSession);
+      await commit("ha reabierto la cuenta cerrada " + cuenta.orden, operadorSession);
     }
   };
 
@@ -213,7 +213,7 @@ export default function Cerradas(props) {
                 {!cuenta.items
                   ? null
                   : cuenta.items.map((item, i) => (
-                      <tr key={i}>
+                      <tr className={item.cancelado?"bg-danger":""} key={i}>
                         {/* <th className="text-center">
                           <button
                             onClick={() => deleteItem(i, item.importe)}

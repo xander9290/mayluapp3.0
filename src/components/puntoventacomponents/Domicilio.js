@@ -102,7 +102,9 @@ export default function Domicilio(props) {
   const deleteItem = async (idx, importe) => {
     if (window.confirm("CONFIRMAR ACCIÓN")) {
       let list = cuenta.items;
-      list.splice(idx, 1);
+      // list.splice(idx, 1);
+      list[idx].cancelado=true;
+      list[idx].importe=0;
       const data = {
         ...cuenta,
         items: list,
@@ -297,13 +299,14 @@ export default function Domicilio(props) {
                 {!cuenta.items
                   ? null
                   : cuenta.items.map((item, i) => (
-                      <tr key={i}>
+                      <tr className={item.cancelado?"bg-danger":""} key={i}>
                         <th className="text-center">
                           <button
                             onClick={() => deleteItem(i, item.importe)}
                             type="button"
                             className="btn btn-danger btn-sm"
                             disabled={cuenta.impreso ? true : false}
+                            style={{display: item.cancelado?"none":"block"}}
                           >
                             &times;
                           </button>
@@ -312,7 +315,7 @@ export default function Domicilio(props) {
                           {item.cant}
                         </td>
                         <td className="text-left font-weight-bold lead">
-                          <p className="m-0 p-0">{item.name}</p>
+                          <p className="m-0 p-0">{item.name} {item.cancelado ? "(X)" : ""}</p>
                           <small>
                             {item.modificadores.map((m, i) => (
                               <p key={i} className="p-0 m-0">

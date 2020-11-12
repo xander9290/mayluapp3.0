@@ -76,7 +76,7 @@ export default function Monitor(props) {
     });
     productos.map((producto) => {
       const contables = items.filter(
-        (item) => item.producto_id === producto.id && item.contable === true
+        (item) => item.producto_id === producto.id && item.contable === true && item.cancelado===false
       );
       if (contables.length > 0) {
         let cant = 0,

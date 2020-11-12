@@ -76,8 +76,9 @@ export const cuentaConstructor = {
 
 export const processImporte = {
   totalItems: function (list = [],dscto) {
+    const listFilter = list.filter(item=>item.cancelado===false);
     let total = 0;
-    list.map((item) => {
+    listFilter.map((item) => {
       total += item.importe;
     });
     let totalCuenta = total - parseInt(dscto);
@@ -285,3 +286,4 @@ export const numeroALetras = (function () {
       );
   };
 })();
+
