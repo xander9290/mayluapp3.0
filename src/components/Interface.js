@@ -26,7 +26,7 @@ function Nav() {
     e.preventDefault();
     commit("ha cerrado sesion",operadorSession);
     window.sessionStorage.clear();
-    window.location.href = "http://localhost:3000";
+    window.location.href = window.location.href;
   };
   return (
     <div className="d-flex justify-content-between align-content-center">

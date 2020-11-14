@@ -37,7 +37,7 @@ export default function LoginForm() {
           commit("ha iniciado sesión",operador.name);
           window.sessionStorage.setItem("operador", operador.name);
           window.sessionStorage.setItem("operadorRol", operador.rol);
-          window.location.href = "http://localhost:3000";  
+          window.location.href = window.location.href;  
         } else {
           setErr("Operador o contraseña incorrecto")
         }
