@@ -40,8 +40,7 @@ export default function Domicilio(props) {
 
   const loadcuentas = async () => {
     const data = await axios.get(
-      apiURI + "/cuentas?fecha=" + fechaActual(Date.now()) + "&estado=abierto"
-    );
+      apiURI + "/cuentas/abierto/" + fechaActual(Date.now()));
     //const cuentasAbiertas = data.data.filter(cuenta=>cuenta.estado==="abierto");
     const _cuentas = data.data.filter(
       (cuenta) => cuenta.servicio === "domicilio"
@@ -103,8 +102,8 @@ export default function Domicilio(props) {
     if (window.confirm("CONFIRMAR ACCIÓN")) {
       let list = cuenta.items;
       // list.splice(idx, 1);
-      list[idx].cancelado=true;
-      list[idx].importe=0;
+      list[idx].cancelado = true;
+      list[idx].importe = 0;
       const data = {
         ...cuenta,
         items: list,
@@ -113,7 +112,7 @@ export default function Domicilio(props) {
       };
       const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
       commit(
-        "ha cancelado un producto de la cuenta " + cuenta.id,
+        "ha cancelado un producto de la cuenta " + cuenta.orden,
         operadorSession
       );
       setCuenta(res.data);
@@ -198,8 +197,8 @@ export default function Domicilio(props) {
           </div>
           <div className="card-body p-1 contenedor-scroll-y">
             <div className="list-group">
-            {cuentas.map((cuenta) => (
-                <CuentaItem cuenta={cuenta} selectCuenta={selectCuenta} />
+              {cuentas.map((cuenta) => (
+                <CuentaItem key={cuenta.id} cuenta={cuenta} selectCuenta={selectCuenta} />
               ))}
             </div>
           </div>
@@ -299,14 +298,16 @@ export default function Domicilio(props) {
                 {!cuenta.items
                   ? null
                   : cuenta.items.map((item, i) => (
-                      <tr className={item.cancelado?"bg-danger":""} key={i}>
+                      <tr className={item.cancelado ? "bg-danger" : ""} key={i}>
                         <th className="text-center">
                           <button
                             onClick={() => deleteItem(i, item.importe)}
                             type="button"
                             className="btn btn-danger btn-sm"
                             disabled={cuenta.impreso ? true : false}
-                            style={{display: item.cancelado?"none":"block"}}
+                            style={{
+                              display: item.cancelado ? "none" : "block",
+                            }}
                           >
                             &times;
                           </button>
@@ -315,7 +316,9 @@ export default function Domicilio(props) {
                           {item.cant}
                         </td>
                         <td className="text-left font-weight-bold lead">
-                          <p className="m-0 p-0">{item.name} {item.cancelado ? "(X)" : ""}</p>
+                          <p className="m-0 p-0">
+                            {item.name} {item.cancelado ? "(X)" : ""}
+                          </p>
                           <small>
                             {item.modificadores.map((m, i) => (
                               <p key={i} className="p-0 m-0">
@@ -454,17 +457,12 @@ function CuentaItem(props) {
       const oldtime = new Date(cuenta.createdAt),
         currenttime = new Date(),
         diff = currenttime.getMinutes() - oldtime.getMinutes();
-      console.log(diff);
       if (diff < 15) {
         setBg("badge badge-success text-success");
       } else if (diff < 25) {
-        setBg(
-          "badge badge-warning text-warning"
-        );
+        setBg("badge badge-warning text-warning");
       } else if (diff < 35) {
-        setBg(
-          "badge badge-danger text-danger"
-        );
+        setBg("badge badge-danger text-danger");
       }
     }, 1000);
   };
@@ -474,21 +472,14 @@ function CuentaItem(props) {
       key={cuenta.id}
       type="button"
       onClick={() => selectCuenta(cuenta.id)}
-      className={
-        cuenta.impreso
-          ? "list-group-item list-group-item-action my-1 font-weight-bold bg-dark text-light border-light"
-          : "list-group-item list-group-item-action my-1 font-weight-bold border-light"
-      }
+      className="list-group-item list-group-item-action my-1 font-weight-bold border-light"
     >
       <small className="d-flex justify-content-between align-content-center text-uppercase font-weight-bold">
         <span>{cuenta.torreta}</span>
         <span>{cuenta.servicio}</span>
         <span>orden: {cuenta.orden}</span>
-        {cuenta.impreso ? (
-          <span>&#128438;</span>
-        ) : (
-          <span className={bg}>{"------"}</span>
-        )}
+        {cuenta.impreso ? <span>&#128438;</span> : null}
+        <span className={bg}>{"------"}</span>
       </small>
     </button>
   );

@@ -44,23 +44,25 @@ export default function Monitor(props) {
 
   const loaddata = async () => {
     const data = await axios.all([
-      axios.get(
-        `${apiURI}/cuentas?fecha_gte=${fechas.gte}&fecha_lte=${fechas.lte}&estado_ne=cancelado`
-      ),
-      axios.get(
-        `${apiURI}/cajas?fecha_gte=${fechas.gte}&fecha_lte=${fechas.lte}`
-      ),
-      axios.get(
-        `${apiURI}/cuentas?fecha_gte=${fechas.gte}&fecha_lte=${fechas.lte}&estado=cancelado`
-      ),
+      axios.get(`${apiURI}/cuentas`),
+      axios.get(`${apiURI}/cajas`),
     ]);
-    procesarServicios(data[0].data);
-    procesarTarjetas(data[0].data);
-    procesarCaja(data[1].data);
-    setCancelados(data[2].data);
-    const _descuentos = data[0].data.filter((cuenta) => cuenta.dscto > 0);
+    const resultCuentas = data[0].data.filter((data) => {
+        return data.fecha >= fechas.gte && data.fecha <= fechas.lte;
+      }),
+      resultCajas = data[1].data.filter((data) => {
+        return data.fecha >= fechas.gte && data.fecha <= fechas.lte;
+      });
+    procesarServicios(resultCuentas);
+    procesarTarjetas(resultCuentas);
+    procesarCaja(resultCajas);
+    const _cancelados = resultCuentas.filter(
+      (cuenta) => cuenta.estado === "cancelado"
+    );
+    setCancelados(_cancelados);
+    const _descuentos = resultCuentas.filter((cuenta) => cuenta.dscto > 0);
     setDescuentos(_descuentos);
-    procesarProductos(data[0].data);
+    procesarProductos(resultCuentas);
   };
 
   const procesarProductos = async (data) => {
@@ -76,7 +78,10 @@ export default function Monitor(props) {
     });
     productos.map((producto) => {
       const contables = items.filter(
-        (item) => item.producto_id === producto.id && item.contable === true && item.cancelado===false
+        (item) =>
+          item.producto_id === producto.id &&
+          item.contable === true &&
+          item.cancelado === false
       );
       if (contables.length > 0) {
         let cant = 0,
@@ -101,7 +106,11 @@ export default function Monitor(props) {
     _tarjetas.map((cuenta) => {
       totaltarjetas += cuenta.tarjeta;
     });
-    setTarjetas({ cant: _tarjetas.length, total: totaltarjetas, cuentas:_tarjetas });
+    setTarjetas({
+      cant: _tarjetas.length,
+      total: totaltarjetas,
+      cuentas: _tarjetas,
+    });
   };
 
   const procesarCaja = (data) => {
@@ -263,18 +272,26 @@ export default function Monitor(props) {
             </ul>
           </div>
           <div className="card-footer">
-            <button onClick={()=>setResumenmodal(true)} type="button" className="btn btn-secondary btn-lg">
+            <button
+              onClick={() => setResumenmodal(true)}
+              type="button"
+              className="btn btn-secondary btn-lg"
+            >
               Imprimir Resumen
             </button>
-            <button onClick={()=>setDetalladomodal(true)} type="button" className="btn btn-secondary btn-lg ml-1">
+            <button
+              onClick={() => setDetalladomodal(true)}
+              type="button"
+              className="btn btn-secondary btn-lg ml-1"
+            >
               Imprimir Detallado
             </button>
           </div>
         </div>
       </div>
-      <ResumenModal 
+      <ResumenModal
         show={resumenmodal}
-        onHide={()=>setResumenmodal(false)}
+        onHide={() => setResumenmodal(false)}
         comedor={cuentascomedor}
         pll={cuentaspll}
         domicilio={cuentasdomicilio}
@@ -286,9 +303,9 @@ export default function Monitor(props) {
         descuentos={descuentos}
         productos={productos}
       />
-      <DetalladoModal 
+      <DetalladoModal
         show={detalladomodal}
-        onHide={()=>setDetalladomodal(false)}
+        onHide={() => setDetalladomodal(false)}
         fechas={fechas}
         productos={productos}
       />

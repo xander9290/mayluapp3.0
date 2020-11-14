@@ -37,7 +37,7 @@ export default function Subcategorias(props) {
 
   const loadsubcategorias = async () => {
     const data = await axios.get(
-      apiURI + "/subcategorias?_sort=categoria_id&_order=asc"
+      apiURI + "/subcategorias"
     );
     setSubcategorias(data.data);
   };
@@ -137,9 +137,9 @@ export default function Subcategorias(props) {
       name: valuesedit.name.trim(),
       createdAt: valuesedit.createdAt,
       createdBy: valuesedit.createdBy,
-      area_id: parseInt(valuesedit.area_id),
+      area_id: valuesedit.area_id,
       modificadores: modificadores,
-      categoria_id: parseInt(valuesedit.categoria_id),
+      categoria_id: valuesedit.categoria_id,
       lastEdit: fechaISO(),
     };
     await axios.put(apiURI + "/subcategorias/" + valuesedit.id, data);
@@ -161,7 +161,7 @@ export default function Subcategorias(props) {
     e.preventDefault();
     let existe = false;
     modificadores.map((m) => {
-      if (m.name === valuemodif.name) {
+      if (m.name === valuemodif.name.trim()) {
         existe = true;
       }
     });

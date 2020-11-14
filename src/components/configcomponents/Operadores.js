@@ -54,7 +54,7 @@ export default function Operadores(props) {
   };
 
   const loadlogs = async () => {
-    const data = await axios.get(apiURI + "/logs?_sort=id&_order=desc");
+    const data = await axios.get(apiURI + "/logs");
     setLogs(data.data);
   };
 
@@ -297,7 +297,7 @@ export default function Operadores(props) {
                     <th scope="row" className="text-center">
                       <button
                         style={{
-                          display: c.id === 1 ? "none" : "block",
+                          display: c.id === "3b12193b-e553-4fe8-921a-101a33847112" ? "none" : "block",
                         }}
                         title="ELIMINAR"
                         onClick={() => deleteOperador(c.id, c.name)}

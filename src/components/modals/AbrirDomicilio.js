@@ -201,10 +201,10 @@ function Formulario(props) {
       setCliente({
         namex: res.data.name,
         tel: res.data.tel,
-        calle: res.data.calle,
-        cruces: res.data.cruces,
-        colonia: res.data.colonia,
-        obs: res.data.obs,
+        calle: res.data.address.calle,
+        cruces: res.data.address.cruces,
+        colonia: res.data.address.colonia,
+        obs: res.data.address.obs,
         id: res.data.id,
       });
       setClientedata(res.data);
@@ -212,7 +212,7 @@ function Formulario(props) {
       setDisabled(true);
       setDisabledBtn(false);
       setSuccessmsj("registrado con éxito");
-      commit(
+      await commit(
         "ha registrado en domicilio a cliente " + res.data.name,
         operadorSession
       );
@@ -235,7 +235,7 @@ function Formulario(props) {
       setClientedata(res.data);
       setDisabled(true);
       setSuccessmsj("registrado con éxito");
-      commit(
+      await commit(
         "ha editado al clinte en domicilio " + cliente.namex,
         operadorSession
       );
@@ -321,7 +321,7 @@ function Formulario(props) {
       orden,
     };
     const newCuenta = await axios.post(apiURI + "/cuentas", data);
-    commit("ha creado la orden en domicilio " + orden, operadorSession);
+    await commit("ha creado la orden en domicilio " + orden, operadorSession);
     setCuenta(newCuenta.data);
     loadcuentas();
     props.onHide();

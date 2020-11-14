@@ -29,7 +29,7 @@ export default function Categorias(props) {
 
   const loadcategorias = async () => {
     const data = await axios.get(
-      apiURI + "/categorias?_sort=name&_order=asc"
+      apiURI + "/categorias"
     );
     setCategorias(data.data);
   };
@@ -62,13 +62,14 @@ export default function Categorias(props) {
   };
 
   const selectcategoria = async (id) => {
-    const data = await axios.get(apiURI + "/categorias/" + id);
+    // const data = await axios.get(apiURI + "/categorias/" + id);
+    const categoria = categorias.find(categoria=>categoria.id===id);
     setValuesedit({
-      name: data.data.name,
-      fondo: data.data.fondo,
-      createdAt: data.data.createdAt,
-      createdBy: data.data.createdBy,
-      lastEdit: data.data.lastEdit,
+      name: categoria.name,
+      fondo: categoria.fondo,
+      createdAt: categoria.createdAt,
+      createdBy: categoria.createdBy,
+      lastEdit: categoria.lastEdit,
       id,
     });
   };

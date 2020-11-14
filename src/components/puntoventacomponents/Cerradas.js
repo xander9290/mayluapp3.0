@@ -30,22 +30,19 @@ export default function Cerradas(props) {
 
   const loadcuentas = async () => {
     const data = await axios.get(
-      apiURI +
-        "/cuentas?fecha=" +
-        fechasearch.fecha +
-        "&estado_ne=abierto&_sort=id&_order=desc"
+      apiURI + "/cuentas/cerrado/" + fechasearch.fecha
     );
-    setCuentas(data.data);
+    setCuentas(data.data.reverse());
   };
 
   const onFecha = (e) => {
     setFechasearch({ ...fechasearch, [e.target.name]: e.target.value });
   };
 
-  const handleFecha = (e) => {
+  const handleFecha = async (e) => {
     e.preventDefault();
     loadcuentas();
-    commit("ha hecho una búsqueda de cuentas cerradas ", operadorSession);
+    await commit("ha hecho una búsqueda de cuentas cerradas ", operadorSession);
   };
 
   const selectCuenta = (id) => {
@@ -57,10 +54,10 @@ export default function Cerradas(props) {
     }
   };
 
-  const reimprimir = () => {
+  const reimprimir = async () => {
     if (cuenta.id) {
       setModalComanda(true);
-      commit(
+      await commit(
         "ha reimprimido la cuenta cerrada " + cuenta.orden,
         operadorSession
       );
@@ -78,6 +75,7 @@ export default function Cerradas(props) {
         efectivo: 0,
         tarjeta: 0,
         cambio: 0,
+        fecha: fechaActual(),
         createdAt: fechaISO(),
         createdBy: operadorSession,
         closedAt: "",
@@ -85,7 +83,10 @@ export default function Cerradas(props) {
       await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
       loadcuentas();
       setCuenta(cuentaConstructor);
-      await commit("ha reabierto la cuenta cerrada " + cuenta.orden, operadorSession);
+      await commit(
+        "ha reabierto la cuenta cerrada " + cuenta.orden,
+        operadorSession
+      );
     }
   };
 
@@ -213,7 +214,7 @@ export default function Cerradas(props) {
                 {!cuenta.items
                   ? null
                   : cuenta.items.map((item, i) => (
-                      <tr className={item.cancelado?"bg-danger":""} key={i}>
+                      <tr className={item.cancelado ? "bg-danger" : ""} key={i}>
                         {/* <th className="text-center">
                           <button
                             onClick={() => deleteItem(i, item.importe)}

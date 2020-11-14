@@ -34,7 +34,7 @@ export default function Productos(props) {
 
   const loadsources = async () => {
     const data = await axios.all([
-      axios.get(apiURI + "/productos?_sort=subcategoria_id&_order=asc"),
+      axios.get(apiURI + "/productos"),
       axios.get(apiURI + "/categorias"),
       axios.get(apiURI + "/subcategorias"),
     ]);
@@ -52,7 +52,7 @@ export default function Productos(props) {
   };
 
   const handleSubcategoria = (e) => {
-    setSubcategoria(parseInt(e.target.value));
+    setSubcategoria(e.target.value);
   };
 
   const handleNewProduct = async (e) => {
@@ -60,7 +60,7 @@ export default function Productos(props) {
     if (action === "new") {
       let existe = false;
       productos.map((p) => {
-        if (p.name === values.name) {
+        if (p.name === values.name.trim()) {
           existe = !existe;
         }
       });

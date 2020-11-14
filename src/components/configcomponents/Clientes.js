@@ -30,7 +30,7 @@ export default function Clientes(props) {
   }, [servicechange]);
 
   const loadclientes = async () => {
-    const data = await axios.get(apiURI + "/clientes?_sort=name&_order=asc");
+    const data = await axios.get(apiURI + "/clientes");
     setClientes(data.data);
   };
 

@@ -33,7 +33,7 @@ export const fechaISO = () => {
 };
 
 export const commit = async (commit, operador) => {
-  await axios.post(apiURI + "/logs", {
+  return await axios.post(apiURI + "/logs", {
     createdAt: fechaISO(),
     fecha: fechaActual(),
     operador: operador,
@@ -56,7 +56,7 @@ export const cuentaConstructor = {
       colonia: "",
       obs: ""
     },
-    id: 0
+    id: null
   },
   estado: "abierto",
   impreso: false,

@@ -7,7 +7,6 @@ import {
   apiURI,
   commit,
 } from "../../helpers";
-import printer from "node-thermal-printer";
 
 import CajaModal from "../modals/Caja";
 
@@ -41,8 +40,8 @@ export default function Caja(props) {
   };
 
   const loadcajas = async () => {
-    const data = await axios.get(apiURI + "/cajas?_sort=id&_order=desc");
-    setCajas(data.data);
+    const data = await axios.get(apiURI + "/cajas");
+    setCajas(data.data.reverse());
   };
 
   const onValues = (e) => {
@@ -59,7 +58,7 @@ export default function Caja(props) {
       createdBy: operadorSession,
     };
     const res = await axios.post(apiURI + "/cajas", data);
-    commit(
+    await commit(
       "ha registrado un " + values.tipo + " de $" + values.importe,
       operadorSession
     );
@@ -72,7 +71,7 @@ export default function Caja(props) {
   const deleteCaja = async (id, tipo, importe) => {
     if (window.confirm("CONFIRMAR ACCIÓN")) {
       await axios.delete(apiURI + "/cajas/" + id);
-      commit("ha eliminado un " + tipo + " de $" + importe, operadorSession);
+      await commit("ha eliminado un " + tipo + " de $" + importe, operadorSession);
       loadcajas();
       reset();
     }
@@ -88,7 +87,7 @@ export default function Caja(props) {
           <div className="card-body">
             <form onSubmit={handleCaja}>
               <div className="form-group">
-                <labe>tipo:</labe>
+                <label>tipo:</label>
                 <select
                   className="form-control form-control-lg text-uppercase"
                   name="tipo"
@@ -194,9 +193,9 @@ export default function Caja(props) {
         caja={caja}
         setCaja={setCaja}
       />
-      <div className="col-md-1">
+      {/* <div className="col-md-1">
         <button onClick={imprimir} type="button" className="btn btn-warning btn-lg">imprimir</button>
-      </div>
+      </div> */}
     </div>
   );
 }

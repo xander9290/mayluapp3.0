@@ -50,9 +50,9 @@ export default function CapturaModal(props) {
 
   const loadsources = async () => {
     const data = await axios.all([
-      axios.get(apiURI + "/categorias?_sort=name&_order=asc"),
-      axios.get(apiURI + "/subcategorias?_sort=name&_order=asc"),
-      axios.get(apiURI + "/productos?_sort=name&_order=asc"),
+      axios.get(apiURI + "/categorias"),
+      axios.get(apiURI + "/subcategorias"),
+      axios.get(apiURI + "/productos"),
     ]);
     setSources({
       categorias: data[0].data,
@@ -136,7 +136,7 @@ export default function CapturaModal(props) {
         price,
         dscto: 0,
         modificadores: [],
-        producto_id: parseInt(producto.id),
+        producto_id: producto.id,
         contable: producto.contable,
         createdAt: fechaISO(),
         createdBy: operadorSession,

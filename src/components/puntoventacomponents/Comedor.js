@@ -39,8 +39,7 @@ export default function Comedor(props) {
 
   const loadcuentas = async () => {
     const data = await axios.get(
-      apiURI + "/cuentas?fecha=" + fechaActual(Date.now()) + "&estado=abierto"
-    );
+      apiURI + "/cuentas/abierto/" + fechaActual(Date.now()));
     //const cuentasAbiertas = data.data.filter(cuenta=>cuenta.estado==="abierto");
     const _cuentas = data.data.filter(
       (cuenta) => cuenta.servicio !== "domicilio"
@@ -145,7 +144,7 @@ export default function Comedor(props) {
       };
       const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
       commit(
-        "ha cancelado un producto de la cuenta " + cuenta.id,
+        "ha cancelado un producto de la cuenta " + cuenta.orden,
         operadorSession
       );
       setCuenta(res.data);
@@ -231,7 +230,7 @@ export default function Comedor(props) {
           <div className="card-body p-1 contenedor-scroll-y">
             <div className="list-group">
               {cuentas.map((cuenta) => (
-                <CuentaItem cuenta={cuenta} selectCuenta={selectCuenta} />
+                <CuentaItem key={cuenta.id} cuenta={cuenta} selectCuenta={selectCuenta} />
               ))}
             </div>
           </div>

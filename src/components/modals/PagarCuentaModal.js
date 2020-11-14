@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import axios from "axios";
 
-import { apiURI, fechaISO, cuentaConstructor, commit, operadorSession } from "../../helpers";
+import {
+  apiURI,
+  fechaISO,
+  cuentaConstructor,
+  commit,
+  operadorSession,
+} from "../../helpers";
 import ComandaModal from "../modals/Comanda";
 
 export default function PagarCuentaModal(props) {
@@ -52,12 +58,12 @@ export default function PagarCuentaModal(props) {
         cambio,
         closedAt: fechaISO(),
       };
-      const res = await axios.put(apiURI+"/cuentas/"+cuenta.id,data);
+      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
       setCuenta(cuentaConstructor);
       loadcuentas();
       setCuentapagada(res.data);
-      document.title="MAyLU"
-      commit("ha cobrado la cuenta "+res.data.orden,operadorSession);
+      document.title = "MAyLU";
+      commit("ha cobrado la cuenta " + res.data.orden, operadorSession);
       setimprimir(recibo);
       props.onHide();
     } else {
@@ -174,10 +180,10 @@ export default function PagarCuentaModal(props) {
           </div>
         </div>
       </Modal.Body>
-      <ComandaModal 
+      <ComandaModal
         cuenta={cuentapagada}
         show={imprimir}
-        onHide={()=>setimprimir(false)}
+        onHide={() => setimprimir(false)}
       />
     </Modal>
   );

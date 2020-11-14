@@ -16,7 +16,7 @@ export default function Areas(props) {
   }, [servicechange]);
 
   const loadareas = async () => {
-    const data = await axios.get(apiURI + "/areas?_sort=name&_order=asc");
+    const data = await axios.get(apiURI + "/areas");
     setAreas(data.data);
   };
 
@@ -60,8 +60,9 @@ export default function Areas(props) {
 
   const selectarea = async (e, id) => {
     e.stopPropagation();
-    const data = await axios.get(apiURI + "/areas/" + id);
-    setArea(data.data);
+    // const data = await axios.get(apiURI + "/areas/" + id);
+    const area = areas.find(area=>area.id===id);
+    setArea(area);
   };
 
   return (
