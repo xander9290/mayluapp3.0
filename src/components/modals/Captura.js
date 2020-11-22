@@ -13,7 +13,7 @@ import {
 } from "../../helpers";
 
 export default function CapturaModal(props) {
-  const { cuenta, setCuenta, loadcuentas } = props;
+  const { cuenta, setCuenta } = props;
 
   const [sources, setSources] = useState({
     categorias: [],
@@ -263,12 +263,12 @@ export default function CapturaModal(props) {
        total: processImporte.totalItems(newItems,cuenta.dscto).total
       }
     const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-    commit(
+    setCuenta(res.data);
+    await commit(
       "ha hecho una captura en la cuenta " + cuenta.orden,
       operadorSession
     );
-    setCuenta(res.data);
-    loadcuentas();
+    // loadcuentas();
     props.onHide();
   };
 
@@ -400,7 +400,7 @@ export default function CapturaModal(props) {
         </div>
       </Modal.Header>
       <Modal.Body className="card-captura row py-0">
-        <div className="col-md-4 p-0 border">
+        <div className="col-md-3 p-0 border">
           <div className="card">
             <div
               ref={listScroll}
@@ -425,10 +425,10 @@ export default function CapturaModal(props) {
                           onClick={() => selectItem(i)}
                           className={itemIndex === i ? "bg-info" : ""}
                         >
-                          <td className="text-center font-weight-bold">
+                          <td className="text-center">
                             {item.cant}
                           </td>
-                          <td className="font-weight-bold">
+                          <td>
                             <p className="m-0 p-0">{item.name}</p>
                             {!item.modificadores
                               ? null
@@ -441,13 +441,13 @@ export default function CapturaModal(props) {
                                   </small>
                                 ))}
                           </td>
-                          <td className="font-weight-bold text-right">
+                          <td>
                             ${item.importe}
                           </td>
-                          <td className="font-weight-bold text-right">
+                          <td>
                             ${item.price}
                           </td>
-                          <td className="font-weight-bold text-right">
+                          <td>
                             -${item.dscto}
                           </td>
                         </tr>
@@ -515,7 +515,7 @@ export default function CapturaModal(props) {
             </button>
           ))}
         </div>
-        <div className="col-md-6 p-0 border">
+        <div className="col-md-7 p-0 border">
           <div className="card card-sources">
             <div className="card-header p-1 scroll-x">
               <div className="subcategoria-container">
@@ -525,7 +525,7 @@ export default function CapturaModal(props) {
                     key={subcategoria.id}
                     type="button"
                     style={{ backgroundColor: categoriaFondo }}
-                    className="btn btn-danger text-uppercase text-dark font-weight-bold mr-1"
+                    className="btn btn-info text-uppercase text-dark font-weight-bold mr-1"
                   >
                     {subcategoria.name}
                   </button>

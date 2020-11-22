@@ -67,14 +67,19 @@ export default function Clientes(props) {
         createdBy: operadorSession,
         lastEdit: "",
       };
-      await axios.post(apiURI + "/clientes", data);
-      loadclientes();
-      reset();
-      setSuccessmsj("Guardado correctamente");
-      commit(`ha creado a cliente ${cliente.namex}`, operadorSession);
-      setTimeout(() => {
-        setSuccessmsj("-");
-      }, 1300);
+      try {
+        const res = await axios.post(apiURI + "/clientes", data);
+        // loadclientes();
+        setClientes([...clientes, res.data]);
+        reset();
+        setSuccessmsj("Guardado correctamente");
+        await commit(`ha creado a cliente ${cliente.namex}`, operadorSession);
+        setTimeout(() => {
+          setSuccessmsj("-");
+        }, 1300);
+      } catch (error) {
+        alert("Error al crear item:\n", error);
+      }
     } else if (action === "edit") {
       const data = {
         name: cliente.namex.trim(),
@@ -89,27 +94,36 @@ export default function Clientes(props) {
         createdBy: operadorSession,
         lastEdit: fechaISO(),
       };
-      await axios.put(apiURI + "/clientes/" + cliente.id, data);
-      loadclientes();
-      reset();
-      setSuccessmsj("Editado correctamente");
-      commit(`ha editado a cliente ${cliente.namex}`, operadorSession);
-      setTimeout(() => {
-        setSuccessmsj("-");
-      }, 1300);
+      try {
+        const res = await axios.put(apiURI + "/clientes/" + cliente.id, data);
+        loadclientes();
+        // setClientes([...clientes, res.data]);
+        reset();
+        setSuccessmsj("Editado correctamente");
+        await commit(`ha editado a cliente ${cliente.namex}`, operadorSession);
+        setTimeout(() => {
+          setSuccessmsj("-");
+        }, 1300);
+      } catch (error) {
+        alert("Error al editar item:\n", error);
+      }
     }
   };
 
   const deleteCliente = async (id, name) => {
     if (window.confirm("confirmar acción")) {
-      commit(`ha eliminado a cliente ${name}`, operadorSession);
+      try {
       await axios.delete(apiURI + "/clientes/" + id);
       loadclientes();
       reset();
+      await commit(`ha eliminado a cliente ${name}`, operadorSession);
       setSuccessmsj("Eliminado correctamente");
       setTimeout(() => {
         setSuccessmsj("-");
       }, 1200);
+      } catch (error) {
+        alert("Error al eliminar item:\n", error);
+      }
     }
   };
 

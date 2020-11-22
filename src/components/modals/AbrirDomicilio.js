@@ -14,7 +14,7 @@ import {
 } from "../../helpers";
 
 export default function AbrirDomicilioModal(props) {
-  const { setCuenta, loadcuentas, setModalcaptura } = props;
+  const { setCuenta, setCuentas, cuentas, setModalcaptura } = props;
 
   const [clientedata, setClientedata] = useState({ id: null });
   const [onexited, setOnexited] = useState(false);
@@ -73,7 +73,8 @@ export default function AbrirDomicilioModal(props) {
                 onexited={onexited}
                 onshow={onshow}
                 setCuenta={setCuenta}
-                loadcuentas={loadcuentas}
+                setCuentas={setCuentas}
+                cuentas={cuentas}
                 setModalcaptura={setModalcaptura}
                 setClientedata={setClientedata}
               />
@@ -82,7 +83,8 @@ export default function AbrirDomicilioModal(props) {
               <Historial
                 clientedata={clientedata}
                 setCuentax={setCuenta}
-                loadcuentasx={loadcuentas}
+                setCuentasx={setCuentas}
+                cuentasx={cuentas}
                 onHide={props.onHide}
                 onexited={onexited}
               />
@@ -98,7 +100,8 @@ function Formulario(props) {
   const {
     setClientedata,
     setCuenta,
-    loadcuentas,
+    setCuentas,
+    cuentas,
     setModalcaptura,
     onexited,
     onshow,
@@ -250,9 +253,7 @@ function Formulario(props) {
   const handleSearch = (e) => {
     e.preventDefault();
     const result = clientes.filter(
-      (cliente) =>
-        cliente.tel === valuesearch.entry.trim() ||
-        cliente.name === valuesearch.entry.trim()
+      (cliente) => cliente.tel === valuesearch.entry.trim()
     );
     if (result.length > 0) {
       setListclientes(result);
@@ -323,7 +324,8 @@ function Formulario(props) {
     const newCuenta = await axios.post(apiURI + "/cuentas", data);
     await commit("ha creado la orden en domicilio " + orden, operadorSession);
     setCuenta(newCuenta.data);
-    loadcuentas();
+    // loadcuentas();
+    setCuentas([...cuentas, newCuenta.data]);
     props.onHide();
     setTimeout(() => {
       setModalcaptura(true);
@@ -444,6 +446,7 @@ function Formulario(props) {
         <div className="card">
           <div className="card-header">
             <form className="form-inline" onSubmit={handleSearch}>
+              <small className="form-text">sólo número telefónico</small>
               <div className="form-group">
                 <input
                   className="form-control"
@@ -483,7 +486,14 @@ function Formulario(props) {
 }
 
 function Historial(props) {
-  const { clientedata, setCuentax, loadcuentasx, onHide, onexited } = props;
+  const {
+    clientedata,
+    setCuentax,
+    setCuentasx,
+    cuentasx,
+    onHide,
+    onexited,
+  } = props;
 
   const [cuentas, setCuentas] = useState([]);
   const [cuenta, setCuenta] = useState({});
@@ -498,7 +508,7 @@ function Historial(props) {
   }, [onexited]);
 
   const loadcuentas = async () => {
-    const data = await axios.get(apiURI + "/cuentas?_sort=id&_order=desc");
+    const data = await axios.get(apiURI + "/cuentas");
     const _cuentas = data.data.filter(
       (cuenta) => cuenta.cliente.id === clientedata.id
     );
@@ -559,9 +569,8 @@ function Historial(props) {
       };
       const newCuenta = await axios.post(apiURI + "/cuentas", data);
       setCuentax(newCuenta.data);
-      loadcuentasx();
-      loadcuentas();
-      commit(
+      setCuentasx([...cuentasx, newCuenta.data]);
+      await commit(
         "ha creado la orden en domicilio por historial " + orden,
         operadorSession
       );

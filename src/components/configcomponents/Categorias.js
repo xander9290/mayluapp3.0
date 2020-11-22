@@ -28,10 +28,12 @@ export default function Categorias(props) {
   }, [servicechange]);
 
   const loadcategorias = async () => {
-    const data = await axios.get(
-      apiURI + "/categorias"
-    );
-    setCategorias(data.data);
+    try {
+      const data = await axios.get(apiURI + "/categorias");
+      setCategorias(data.data);
+    } catch (error) {
+      alert("Error al cargar categorias:\n", error);
+    }
   };
 
   const onValues = (e) => {
@@ -55,15 +57,22 @@ export default function Categorias(props) {
         createdAt: fechaISO(),
         createdBy: operadorSession,
       };
-      await axios.post(apiURI + "/categorias", data);
-      loadcategorias();
-      reset();
+      try {
+        const res = await axios.post(apiURI + "/categorias", data);
+        // loadcategorias();
+        if (res.statusText === "OK") {
+          setCategorias([...categorias, res.data]);
+        }
+        reset();
+      } catch (error) {
+        alert("Error al crear item:\n", error);
+      }
     }
   };
 
   const selectcategoria = async (id) => {
     // const data = await axios.get(apiURI + "/categorias/" + id);
-    const categoria = categorias.find(categoria=>categoria.id===id);
+    const categoria = categorias.find((categoria) => categoria.id === id);
     setValuesedit({
       name: categoria.name,
       fondo: categoria.fondo,
@@ -76,9 +85,13 @@ export default function Categorias(props) {
 
   const deletecategoria = async (id) => {
     if (window.confirm("confirmar acción")) {
-      await axios.delete(apiURI + "/categorias/" + id);
-      loadcategorias();
-      reset();
+      try {
+        await axios.delete(apiURI + "/categorias/" + id);
+        loadcategorias();
+        reset();
+      } catch (error) {
+        alert("Error al eliminar item:\n", error);
+      }
     }
   };
 
@@ -215,7 +228,10 @@ export default function Categorias(props) {
             <h5 className="card-title">Edición</h5>
           </div>
           <div className="card-body">
-            <form onSubmit={handleeditar} disabled={valuesedit.id?false:true}>
+            <form
+              onSubmit={handleeditar}
+              disabled={valuesedit.id ? false : true}
+            >
               <div className="form-group">
                 <input
                   className="form-control"

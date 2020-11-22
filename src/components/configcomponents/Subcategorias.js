@@ -36,9 +36,7 @@ export default function Subcategorias(props) {
   }, [servicechange]);
 
   const loadsubcategorias = async () => {
-    const data = await axios.get(
-      apiURI + "/subcategorias"
-    );
+    const data = await axios.get(apiURI + "/subcategorias");
     setSubcategorias(data.data);
   };
 
@@ -87,9 +85,14 @@ export default function Subcategorias(props) {
         categoria_id: "",
         modificadores: [],
       };
-      await axios.post(apiURI + "/subcategorias", data);
-      loadsubcategorias();
-      reset();
+      try {
+        const res = await axios.post(apiURI + "/subcategorias", data);
+        // loadsubcategorias();
+        setSubcategorias([...subcategorias, res.data].reverse());
+        reset();
+      } catch (error) {
+        alert("Error al crear item:\n", error);
+      }
     }
   };
 
@@ -98,11 +101,18 @@ export default function Subcategorias(props) {
     setErr("-");
   };
 
-  const eliminar = async (id) => {
+  const eliminar = async (id, idx) => {
     if (window.confirm("confirmar acción")) {
-      await axios.delete(apiURI + "/subcategorias/" + id);
-      loadsubcategorias();
-      reset();
+      try {
+        const res = await axios.delete(apiURI + "/subcategorias/" + id);
+        // loadsubcategorias();
+        let list = subcategorias;
+        list.splice(idx, 1);
+        setSubcategorias([...list].reverse());
+        reset();
+      } catch (error) {
+        alert("Error al eliminar item:\n", error);
+      }
     }
   };
 
@@ -231,7 +241,7 @@ export default function Subcategorias(props) {
           </div>
           <div className="card-body">
             <ul className="list-group list-items">
-              {subcategorias.map((s) => {
+              {subcategorias.map((s, idx) => {
                 const categoria = categorias.find(
                   (c) => c.id === s.categoria_id
                 );
@@ -255,7 +265,7 @@ export default function Subcategorias(props) {
                     </span>
                     <span>
                       <button
-                        onClick={() => eliminar(s.id)}
+                        onClick={() => eliminar(s.id, idx)}
                         className="btn btn-danger mr-1"
                         title="eliminar"
                       >

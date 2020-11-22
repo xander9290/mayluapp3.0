@@ -63,7 +63,7 @@ export default function PagarCuentaModal(props) {
       loadcuentas();
       setCuentapagada(res.data);
       document.title = "MAyLU";
-      commit("ha cobrado la cuenta " + res.data.orden, operadorSession);
+      await commit("ha cobrado la cuenta " + res.data.orden, operadorSession);
       setimprimir(recibo);
       props.onHide();
     } else {

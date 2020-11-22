@@ -39,7 +39,8 @@ export default function Comedor(props) {
 
   const loadcuentas = async () => {
     const data = await axios.get(
-      apiURI + "/cuentas/abierto/" + fechaActual(Date.now()));
+      apiURI + "/cuentas/abierto/" + fechaActual(Date.now())
+    );
     //const cuentasAbiertas = data.data.filter(cuenta=>cuenta.estado==="abierto");
     const _cuentas = data.data.filter(
       (cuenta) => cuenta.servicio !== "domicilio"
@@ -47,11 +48,12 @@ export default function Comedor(props) {
     setCuentas(_cuentas);
   };
 
-  const selectCuenta = (id) => {
-    const result = cuentas.find((cuenta) => cuenta.id === id);
-    if (result) {
-      setCuenta(result);
-      document.title = `MAyLU - ${result.torreta} - $${result.total}.00`;
+  const selectCuenta = async (id) => {
+    // const result = cuentas.find((cuenta) => cuenta.id === id);
+    const res = await axios.get(apiURI + "/cuentas/" + id);
+    if (res.data) {
+      setCuenta(res.data);
+      document.title = `MAyLU - ${res.data.torreta} - $${res.data.total}.00`;
     }
   };
 
@@ -81,7 +83,7 @@ export default function Comedor(props) {
           operadorSession
         );
         setCuenta(res.data);
-        loadcuentas();
+        // loadcuentas();
       }
     } else {
       alert("SELECCIONA UNA CUENTA PARA CONTINUAR");
@@ -106,7 +108,7 @@ export default function Comedor(props) {
         const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
         commit("ha impreso la orden " + cuenta.orden, operadorSession);
         setCuenta(res.data);
-        loadcuentas();
+        // loadcuentas();
         setModalComanda(true);
       } else {
         alert("SELECCIONA UNA CUENTA PARA CONTINUAR");
@@ -117,16 +119,20 @@ export default function Comedor(props) {
   };
 
   const reabrir = async () => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        impreso: false,
-        closedAt: "",
-      };
-      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      commit("ha reabierto la orden " + cuenta.orden, operadorSession);
-      setCuenta(res.data);
-      loadcuentas();
+    if (operadorRol === "master") {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        const data = {
+          ...cuenta,
+          impreso: false,
+          closedAt: "",
+        };
+        const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        commit("ha reabierto la orden " + cuenta.orden, operadorSession);
+        setCuenta(res.data);
+        // loadcuentas();
+      }
+    } else {
+      alert("DENEGADO!\nEsta operación requiere supervisión");
     }
   };
 
@@ -148,7 +154,7 @@ export default function Comedor(props) {
         operadorSession
       );
       setCuenta(res.data);
-      loadcuentas();
+      // loadcuentas();
     }
   };
 
@@ -158,28 +164,45 @@ export default function Comedor(props) {
 
   const handleDscto = async (e) => {
     e.preventDefault();
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        dscto: parseInt(dscto.dscto),
-        total: processImporte.totalItems(cuenta.items, dscto.dscto).total,
-      };
-      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      setCuenta(res.data);
-      loadcuentas();
+    if (operadorRol === "master") {
+      if (window.confirm("CONFIRMAR ACCIÓN") && cuenta.id) {
+        const data = {
+          ...cuenta,
+          dscto: parseInt(dscto.dscto),
+          total: processImporte.totalItems(cuenta.items, dscto.dscto).total,
+        };
+        const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        await commit(
+          "ha aplicado un descuento en la orden: " + cuenta.orden,
+          operadorSession
+        );
+        setCuenta(res.data);
+        // loadcuentas();
+        setDscto({ dscto: 0 });
+      } else {
+        alert("Selecciona una cuenta para continuar");
+        setDscto({ dscto: 0 });
+      }
+    } else {
+      alert("!DENEGADO!\nEsta operación requiere supervisión");
       setDscto({ dscto: 0 });
     }
   };
 
   const cancelarCuenta = async () => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        estado: "cancelado",
-      };
-      await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      setCuenta(cuentaConstructor);
-      loadcuentas();
+    if (operadorRol === "master") {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        const data = {
+          ...cuenta,
+          estado: "cancelado",
+        };
+        await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        await commit("ha cancelado la orden: " + cuenta.orden, operadorSession);
+        setCuenta(cuentaConstructor);
+        loadcuentas();
+      }
+    } else {
+      alert("!DENEGADO!\nEsta acción requiere supervisión");
     }
   };
 
@@ -230,7 +253,11 @@ export default function Comedor(props) {
           <div className="card-body p-1 contenedor-scroll-y">
             <div className="list-group">
               {cuentas.map((cuenta) => (
-                <CuentaItem key={cuenta.id} cuenta={cuenta} selectCuenta={selectCuenta} />
+                <CuentaItem
+                  key={cuenta.id}
+                  cuenta={cuenta}
+                  selectCuenta={selectCuenta}
+                />
               ))}
             </div>
           </div>
@@ -340,7 +367,9 @@ export default function Comedor(props) {
                           {item.cant}
                         </td>
                         <td className="text-left font-weight-bold lead">
-                          <p className="m-0 p-0">{item.name} {item.cancelado ? "(X)" : ""}</p>
+                          <p className="m-0 p-0">
+                            {item.name} {item.cancelado ? "(X)" : ""}
+                          </p>
                           <small>
                             {item.modificadores.map((m, i) => (
                               <p key={i} className="p-0 m-0">
@@ -431,8 +460,8 @@ export default function Comedor(props) {
         show={abrircuentamodal}
         onHide={() => setAbrircuentamodal(false)}
         cuentas={cuentas}
+        setCuentas={setCuentas}
         setCuenta={setCuenta}
-        loadcuentas={loadcuentas}
         setModalcaptura={setModalcaptura}
       />
       <CapturaModal
@@ -440,7 +469,6 @@ export default function Comedor(props) {
         onHide={() => setModalcaptura(false)}
         cuenta={cuenta}
         setCuenta={setCuenta}
-        loadcuentas={loadcuentas}
       />
       <ComandaModal
         show={modalComanda}
@@ -452,8 +480,9 @@ export default function Comedor(props) {
         show={modalPagar}
         onHide={() => setmodalPagar(false)}
         cuenta={cuenta}
-        loadcuentas={loadcuentas}
+        cuentas={cuentas}
         setCuenta={setCuenta}
+        loadcuentas={loadcuentas}
       />
     </div>
   );

@@ -45,6 +45,7 @@ export default function Productos(props) {
 
   const onValues = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
+    setExistemsj("-");
   };
 
   const handleContable = () => {
@@ -76,14 +77,19 @@ export default function Productos(props) {
           createdBy: operadorSession,
           lastEdit: null,
         };
-        await axios.post(apiURI + "/productos", data);
-        setSuccessmsj("Agregado correctamente");
-        setTimeout(() => {
-          setSuccessmsj("-");
-        }, 1200);
-        loadsources();
-        reset();
-        inputNombre.current.focus();
+        try {
+          const res = await axios.post(apiURI + "/productos", data);
+          setSuccessmsj("Agregado correctamente");
+          setTimeout(() => {
+            setSuccessmsj("-");
+          }, 1200);
+          // loadsources();
+          setProductos([...productos, res.data].reverse());
+          reset();
+          inputNombre.current.focus();
+        } catch (error) {
+          alert("Error al crear item:\n", error);
+        }
       }
     } else if (action === "edit") {
       const data = {
@@ -95,24 +101,37 @@ export default function Productos(props) {
         createdBy: values.createdBy,
         lastEdit: fechaISO(),
       };
-
-      await axios.put(apiURI + "/productos/" + values.id, data);
-      setSuccessmsj("Agregado correctamente");
-      setTimeout(() => {
-        setSuccessmsj("-");
-      }, 1200);
-      loadsources();
-      reset();
-      setAction("new");
-      inputNombre.current.focus();
+      try {
+        const res = await axios.put(apiURI + "/productos/" + values.id, data);
+        setSuccessmsj("Agregado correctamente");
+        setTimeout(() => {
+          setSuccessmsj("-");
+        }, 1200);
+        loadsources();
+        // setProductos([...productos, res.data]);
+        reset();
+        setAction("new");
+        inputNombre.current.focus();
+      } catch (error) {
+        alert("Error al editar item:\n", error);
+      }
     }
   };
 
-  const eliminar = async (id) => {
+  const eliminar = async (id, idx) => {
     if (window.confirm("confirmar acción")) {
-      await axios.delete(apiURI + "/productos/" + id);
-      reset();
-      loadsources();
+      try {
+        const res = await axios.delete(apiURI + "/productos/" + id);
+        reset();
+        // loadsources();
+        if (res.statusText === "OK") {
+          let list = productos;
+          list.splice(idx, 1);
+          setProductos([...list]);
+        }
+      } catch (error) {
+        alert("Error al eliminar item:\n", error);
+      }
     }
   };
 
@@ -337,7 +356,7 @@ export default function Productos(props) {
                 </tr>
               </thead>
               <tbody>
-                {productos.map((p) => {
+                {productos.map((p, idx) => {
                   let fondo = "",
                     cateName,
                     subName;
@@ -359,7 +378,7 @@ export default function Productos(props) {
                       <th scope="row" className="text-center">
                         <button
                           title="ELIMINAR"
-                          onClick={() => eliminar(p.id)}
+                          onClick={() => eliminar(p.id, idx)}
                           className="btn btn-danger btn-sm"
                         >
                           &times;
@@ -394,7 +413,6 @@ export default function Productos(props) {
                       </td>
                       <td className="text-center">
                         <input
-                          className="form-check-input"
                           type="checkbox"
                           checked={p.contable ? true : false}
                           readOnly

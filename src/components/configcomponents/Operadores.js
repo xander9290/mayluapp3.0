@@ -46,6 +46,7 @@ export default function Operadores(props) {
     });
     setAction("new");
     setSearchLogs({ fecha: fechaActual(), operador: "" });
+    
   };
 
   const loadoperadores = async () => {
@@ -55,7 +56,7 @@ export default function Operadores(props) {
 
   const loadlogs = async () => {
     const data = await axios.get(apiURI + "/logs");
-    setLogs(data.data);
+    setLogs(data.data.reverse());
   };
 
   const onValues = (e) => {
@@ -86,15 +87,20 @@ export default function Operadores(props) {
           createdBy: operadorSession,
           lastEdit: "",
         };
-        await axios.post(apiURI + "/operadores", data);
-        loadoperadores();
-        reset();
-        setSuccesmsj("Agreado correctamente");
-        commit(`ha creado a operador ${values.name}`, operadorSession);
-        setTimeout(() => {
-          setSuccesmsj("-");
-        }, 1200);
-        loadlogs();
+        try {
+          const res = await axios.post(apiURI + "/operadores", data);
+          // loadoperadores();
+          setOperadores([...operadores, res.data]);
+          reset();
+          setSuccesmsj("Agreado correctamente");
+          await commit(`ha creado a operador ${values.name}`, operadorSession);
+          setTimeout(() => {
+            setSuccesmsj("-");
+          }, 1200);
+          loadlogs();
+        } catch (error) {
+          alert("Error al crear item:\n", error);
+        }
       }
     } else if (action === "edit") {
       const saltos = await bcrypt.genSalt(5);
@@ -107,15 +113,20 @@ export default function Operadores(props) {
         createdBy: values.createdBy,
         lastEdit: fechaISO(),
       };
-      await axios.put(apiURI + "/operadores/" + values.id, data);
-      loadoperadores();
-      reset();
-      setSuccesmsj("Editado correctamente");
-      commit(`ha editado a operador ${values.name}`, operadorSession);
-      setTimeout(() => {
-        setSuccesmsj("-");
-      }, 1200);
-      loadlogs();
+      try {
+        const res = await axios.put(apiURI + "/operadores/" + values.id, data);
+        loadoperadores();
+        // setOperadores([...operadores, res.data]);
+        reset();
+        setSuccesmsj("Editado correctamente");
+        await commit(`ha editado a operador ${values.name}`, operadorSession);
+        setTimeout(() => {
+          setSuccesmsj("-");
+        }, 1200);
+        loadlogs();
+      } catch (error) {
+        alert("Error al editar item:\n", error);
+      }
     }
   };
 
@@ -137,11 +148,15 @@ export default function Operadores(props) {
 
   const deleteOperador = async (id, name) => {
     if (window.confirm("confirmar acción")) {
-      await axios.delete(apiURI + "/operadores/" + id);
-      commit(`ha eliminado operador ${name}`, operadorSession);
-      loadoperadores();
-      loadlogs();
-      reset();
+      try {
+        await axios.delete(apiURI + "/operadores/" + id);
+        await commit(`ha eliminado operador ${name}`, operadorSession);
+        loadoperadores();
+        loadlogs();
+        reset();
+      } catch (error) {
+        alert("Error al eliminar item:\n", error);
+      }
     }
   };
 
@@ -297,7 +312,10 @@ export default function Operadores(props) {
                     <th scope="row" className="text-center">
                       <button
                         style={{
-                          display: c.id === "3b12193b-e553-4fe8-921a-101a33847112" ? "none" : "block",
+                          display:
+                            c.id === "3b12193b-e553-4fe8-921a-101a33847112"
+                              ? "none"
+                              : "block",
                         }}
                         title="ELIMINAR"
                         onClick={() => deleteOperador(c.id, c.name)}

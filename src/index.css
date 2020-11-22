@@ -15,6 +15,13 @@
     height: 510px !important;
     overflow-y: scroll;
   }
+  .list-items-operadores {
+    height: 165px;
+    overflow-y: scroll;
+  }
+  .list-items-operadores li:hover {
+    cursor: pointer;
+  }
   .main {
     height: 90vh;
   }
@@ -61,8 +68,8 @@
    white-space: nowrap;
   }
   .subcategoria-container button, .productos-container button, .modificadores-container button {
-    width: 140px;
-    height: 64px;
+    width: 145px;
+    height: 65px;
     white-space: normal;
   }
   .input-editar {

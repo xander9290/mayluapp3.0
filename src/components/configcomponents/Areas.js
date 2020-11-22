@@ -43,25 +43,34 @@ export default function Areas(props) {
         createdAt: fechaISO(),
         createdBy: operadorSession,
       };
-      await axios.post(apiURI + "/areas", data);
-      loadareas();
-      setValues({ name: "" });
-      setArea({});
+      try {
+        const res = await axios.post(apiURI + "/areas", data);
+        // loadareas();
+        setAreas([...areas, res.data]);
+        setValues({ name: "" });
+        setArea({});
+      } catch (error) {
+        alert("Error al crear item:\n",error);
+      }
     }
   };
 
   const deltearea = async (id) => {
     if (window.confirm("confirmar acción")) {
-      await axios.delete(apiURI + "/areas/" + id);
-      loadareas();
-      setArea({});
+      try {
+        await axios.delete(apiURI + "/areas/" + id);
+        loadareas();
+        setArea({});
+      } catch (error) {
+        alert("Error al eliminar item:\n",error);
+      }
     }
   };
 
   const selectarea = async (e, id) => {
     e.stopPropagation();
     // const data = await axios.get(apiURI + "/areas/" + id);
-    const area = areas.find(area=>area.id===id);
+    const area = areas.find((area) => area.id === id);
     setArea(area);
   };
 

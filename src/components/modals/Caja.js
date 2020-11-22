@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 
+import { formatDate } from "../../helpers";
+
 export default function CajaModal(props) {
   const { caja, setCaja } = props;
 
@@ -39,7 +41,7 @@ export default function CajaModal(props) {
          <br></br>
           <hr></hr>
           <h3>{caja.tipo}</h3>
-          <p>fecha: {caja.fecha} Operador: {caja.createdBy}</p>
+          <p>fecha: {formatDate(caja.createdAt)} Operador: {caja.createdBy}</p>
           <hr></hr>
           <p>concepto: {caja.concepto}</p>
           <p>importe: ${caja.importe}</p>

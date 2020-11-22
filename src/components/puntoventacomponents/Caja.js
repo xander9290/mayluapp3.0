@@ -6,6 +6,7 @@ import {
   operadorSession,
   apiURI,
   commit,
+  fechaISO,
 } from "../../helpers";
 
 import CajaModal from "../modals/Caja";
@@ -15,16 +16,18 @@ export default function Caja(props) {
 
   const [cajas, setCajas] = useState([]);
   const [caja, setCaja] = useState({});
-    const [cajamodal, setCajamodal] = useState(false);
+  const [cajamodal, setCajamodal] = useState(false);
   const [values, setValues] = useState({
     tipo: "",
     concepto: "",
     importe: "",
   });
 
-  const imprimir = () => {
-    
-  }
+  const imprimir = () => {};
+
+  useEffect(()=>{
+    loadcajas();
+  },[])
 
   useEffect(() => {
     loadcajas();
@@ -55,6 +58,7 @@ export default function Caja(props) {
       concepto: values.concepto.trim(),
       importe: parseInt(values.importe),
       fecha: fechaActual(Date.now()),
+      createdAt: fechaISO(),
       createdBy: operadorSession,
     };
     const res = await axios.post(apiURI + "/cajas", data);
@@ -62,8 +66,9 @@ export default function Caja(props) {
       "ha registrado un " + values.tipo + " de $" + values.importe,
       operadorSession
     );
-    setCaja(res.data)
-    loadcajas();
+    setCaja(res.data);
+    setCajas([...cajas,res.data].reverse());
+    // loadcajas();
     reset();
     setCajamodal(true);
   };
@@ -71,7 +76,10 @@ export default function Caja(props) {
   const deleteCaja = async (id, tipo, importe) => {
     if (window.confirm("CONFIRMAR ACCIÓN")) {
       await axios.delete(apiURI + "/cajas/" + id);
-      await commit("ha eliminado un " + tipo + " de $" + importe, operadorSession);
+      await commit(
+        "ha eliminado un " + tipo + " de $" + importe,
+        operadorSession
+      );
       loadcajas();
       reset();
     }
@@ -187,9 +195,9 @@ export default function Caja(props) {
           </div>
         </div>
       </div>
-      <CajaModal 
+      <CajaModal
         show={cajamodal}
-        onHide={()=>setCajamodal(false)}
+        onHide={() => setCajamodal(false)}
         caja={caja}
         setCaja={setCaja}
       />

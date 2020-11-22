@@ -63,8 +63,8 @@ export default function Puntoventa() {
               </a>
             </li>
             <li
-              style={{ display: operadorRol === "operador" ? "none" : "block" }}
               className="nav-item"
+              style={{display: operadorRol==="master"?"block":"none"}}
             >
               <a
                 onClick={serviceChange}

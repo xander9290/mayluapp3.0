@@ -48,11 +48,12 @@ export default function Domicilio(props) {
     setCuentas(_cuentas);
   };
 
-  const selectCuenta = (id) => {
-    const result = cuentas.find((cuenta) => cuenta.id === id);
-    if (result) {
-      setCuenta(result);
-      document.title = `MAyLU - ${result.torreta} - $${result.total}.00`;
+  const selectCuenta = async (id) => {
+    // const result = cuentas.find((cuenta) => cuenta.id === id);
+    const res = await axios.get(apiURI+"/cuentas/"+id);
+    if (res.data) {
+      setCuenta(res.data);
+      document.title = `MAyLU - ${res.data.torreta} - $${res.data.total}.00`;
     }
   };
 
@@ -72,9 +73,9 @@ export default function Domicilio(props) {
           impreso: true,
         };
         const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-        commit("ha impreso la orden " + cuenta.orden, operadorSession);
+        await commit("ha impreso la orden " + cuenta.orden, operadorSession);
         setCuenta(res.data);
-        loadcuentas();
+        // loadcuentas();
         setModalComanda(true);
       } else {
         alert("SELECCIONA UNA CUENTA PARA CONTINUAR");
@@ -85,16 +86,20 @@ export default function Domicilio(props) {
   };
 
   const reabrir = async () => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        impreso: false,
-        closedAt: "",
-      };
-      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      commit("ha reabierto la orden " + cuenta.orden, operadorSession);
-      setCuenta(res.data);
-      loadcuentas();
+    if(operadorRol==="master") {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        const data = {
+          ...cuenta,
+          impreso: false,
+          closedAt: "",
+        };
+        const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        commit("ha reabierto la orden " + cuenta.orden, operadorSession);
+        setCuenta(res.data);
+        // loadcuentas();
+      }
+    } else {
+      alert("!DENEGADO!\nEsta acción requiere supervisión");
     }
   };
 
@@ -116,7 +121,7 @@ export default function Domicilio(props) {
         operadorSession
       );
       setCuenta(res.data);
-      loadcuentas();
+      // loadcuentas();
     }
   };
 
@@ -126,28 +131,41 @@ export default function Domicilio(props) {
 
   const handleDscto = async (e) => {
     e.preventDefault();
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        dscto: parseInt(dscto.dscto),
-        total: processImporte.totalItems(cuenta.items, dscto.dscto).total,
-      };
-      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      setCuenta(res.data);
-      loadcuentas();
-      setDscto({ dscto: 0 });
+    if(operadorRol==="master") {
+      if (window.confirm("CONFIRMAR ACCIÓN") && cuenta.id) {
+        const data = {
+          ...cuenta,
+          dscto: parseInt(dscto.dscto),
+          total: processImporte.totalItems(cuenta.items, dscto.dscto).total,
+        };
+        const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        await commit("ha aplicado un descuento en la orden: "+cuenta.orden,operadorSession);
+        setCuenta(res.data);
+        // loadcuentas();
+        setDscto({ dscto: 0 });
+      } else {
+        alert("Selecciona una cuenta para continuar");
+        setDscto({ dscto: 0 });
+      }
+    } else {
+      alert("!DENEGADO!\nEsta acción requiere supervisión");
     }
   };
 
   const cancelarCuenta = async () => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        estado: "cancelado",
-      };
-      await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      setCuenta(cuentaConstructor);
-      loadcuentas();
+    if(operadorRol==="master") {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        const data = {
+          ...cuenta,
+          estado: "cancelado",
+        };
+        await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        await commit("ha cancelado la orden: "+cuenta.orden,operadorSession);
+        setCuenta(cuentaConstructor);
+        loadcuentas();
+      }
+    } else {
+      alert("!DENEGADO!\nEsta acción requiere supervisión");
     }
   };
 
@@ -408,8 +426,9 @@ export default function Domicilio(props) {
       <AbrirDomicilioModal
         show={abrircuentamodal}
         onHide={() => setAbrircuentamodal(false)}
+        cuentas={cuentas}
+        setCuentas={setCuentas}
         setCuenta={setCuenta}
-        loadcuentas={loadcuentas}
         setModalcaptura={setModalcaptura}
       />
       <CapturaModal
@@ -417,7 +436,6 @@ export default function Domicilio(props) {
         onHide={() => setModalcaptura(false)}
         cuenta={cuenta}
         setCuenta={setCuenta}
-        loadcuentas={loadcuentas}
       />
       <ComandaModal
         show={modalComanda}
@@ -429,8 +447,8 @@ export default function Domicilio(props) {
         show={modalPagar}
         onHide={() => setmodalPagar(false)}
         cuenta={cuenta}
-        loadcuentas={loadcuentas}
         setCuenta={setCuenta}
+        loadcuentas={loadcuentas}
       />
       <InfoCliente
         show={modalinfo}

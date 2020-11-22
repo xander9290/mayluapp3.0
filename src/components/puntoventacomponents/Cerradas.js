@@ -32,7 +32,8 @@ export default function Cerradas(props) {
     const data = await axios.get(
       apiURI + "/cuentas/cerrado/" + fechasearch.fecha
     );
-    setCuentas(data.data.reverse());
+    const _cuentas = data.data.filter(cuenta=>cuenta.estado !== "abierto");
+    setCuentas(_cuentas.reverse());
   };
 
   const onFecha = (e) => {
@@ -67,26 +68,30 @@ export default function Cerradas(props) {
   };
 
   const reabrir = async () => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      const data = {
-        ...cuenta,
-        estado: "abierto",
-        impreso: false,
-        efectivo: 0,
-        tarjeta: 0,
-        cambio: 0,
-        fecha: fechaActual(),
-        createdAt: fechaISO(),
-        createdBy: operadorSession,
-        closedAt: "",
-      };
-      await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      loadcuentas();
-      setCuenta(cuentaConstructor);
-      await commit(
-        "ha reabierto la cuenta cerrada " + cuenta.orden,
-        operadorSession
-      );
+    if(operadorRol==="master") {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        const data = {
+          ...cuenta,
+          estado: "abierto",
+          impreso: false,
+          efectivo: 0,
+          tarjeta: 0,
+          cambio: 0,
+          fecha: fechaActual(),
+          createdAt: fechaISO(),
+          createdBy: operadorSession,
+          closedAt: "",
+        };
+        await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        loadcuentas();
+        setCuenta(cuentaConstructor);
+        await commit(
+          "ha reabierto la cuenta cerrada " + cuenta.orden,
+          operadorSession
+        );
+      }
+    } else {
+      alert("!DENEGADO!\nEsta operación requiere supervisión")
     }
   };
 
@@ -229,7 +234,9 @@ export default function Cerradas(props) {
                           {item.cant}
                         </td>
                         <td className="text-left font-weight-bold lead">
-                          <p className="m-0 p-0">{item.name}</p>
+                          <p className="m-0 p-0">
+                            {item.name} {item.cancelado ? "(X)" : ""}
+                          </p>
                           <small>
                             {item.modificadores.map((m, i) => (
                               <p key={i} className="p-0 m-0">

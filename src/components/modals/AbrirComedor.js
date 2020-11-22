@@ -11,7 +11,12 @@ import {
 } from "../../helpers";
 
 export default function AbrirComedorModal(props) {
-  const { cuentas, loadcuentas, setCuenta, setModalcaptura } = props;
+  const {
+    cuentas,
+    setCuentas,
+    setCuenta,
+    setModalcaptura,
+  } = props;
 
   const inputTorreta = useRef();
   const [values, setValues] = useState({
@@ -78,14 +83,19 @@ export default function AbrirComedorModal(props) {
         folio,
         orden,
       };
-      const newCuenta = await axios.post(apiURI + "/cuentas", data);
-      commit("ha creado la orden en comedor " + orden, operadorSession);
-      loadcuentas();
-      setCuenta(newCuenta.data);
-      props.onHide();
-      setTimeout(() => {
-        setModalcaptura(true);
-      }, 500);
+      try {
+        const newCuenta = await axios.post(apiURI + "/cuentas", data);
+        await commit("ha creado la orden en comedor " + orden, operadorSession);
+        // loadcuentas();
+        setCuenta(newCuenta.data);
+        setCuentas([...cuentas,newCuenta.data]);
+        props.onHide();
+        setTimeout(() => {
+          setModalcaptura(true);
+        }, 500);
+      } catch (error) {
+        alert("Error al crear cuenta:\n", error);
+      }
     }
   };
 
