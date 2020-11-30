@@ -252,8 +252,9 @@ function Formulario(props) {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    let entry = valuesearch.entry.toUpperCase();
     const result = clientes.filter(
-      (cliente) => cliente.tel === valuesearch.entry.trim()
+      (cliente) => cliente.tel === entry.trim() || cliente.name === entry.trim()
     );
     if (result.length > 0) {
       setListclientes(result);
@@ -446,7 +447,6 @@ function Formulario(props) {
         <div className="card">
           <div className="card-header">
             <form className="form-inline" onSubmit={handleSearch}>
-              <small className="form-text">sólo número telefónico</small>
               <div className="form-group">
                 <input
                   className="form-control"

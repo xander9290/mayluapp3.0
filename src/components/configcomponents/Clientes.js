@@ -153,8 +153,9 @@ export default function Clientes(props) {
   const handleSearch = (e) => {
     e.preventDefault();
     const results = [];
+    let entry = search.entry.toUpperCase();
     clientes.map((c) => {
-      if (c.tel === search.entry.trim() || c.name === search.entry.trim()) {
+      if (c.tel === entry.trim() || c.name === entry.trim()) {
         results.push({
           name: c.name,
           tel: c.tel,
