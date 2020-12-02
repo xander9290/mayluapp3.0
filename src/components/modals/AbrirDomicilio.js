@@ -513,7 +513,7 @@ function Historial(props) {
       (cuenta) => cuenta.cliente.id === clientedata.id
     );
     if (_cuentas.length > 0) {
-      setCuentas(_cuentas);
+      setCuentas(_cuentas.reverse());
     } else {
       setCuentas([]);
     }
@@ -598,6 +598,7 @@ function Historial(props) {
               {cuentas.length > 0 ? (
                 cuentas.map((cuenta) => (
                   <button
+                    key={cuenta.id}
                     onClick={() => selectCuenta(cuenta.id)}
                     type="button"
                     className="list-group-item list-group-item-action my-1 text-uppercase font-weight-bold"
