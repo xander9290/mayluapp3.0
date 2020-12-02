@@ -16,6 +16,7 @@ import CapturaModal from "../modals/Captura";
 import ComandaModal from "../modals/Comanda";
 import PagarCuentaModal from "../modals/PagarCuentaModal";
 import InfoCliente from "../modals/Info";
+import ReasignarClienteModal from "../modals/ReasignarModal";
 
 export default function Domicilio(props) {
   const { changeservicio } = props;
@@ -28,6 +29,7 @@ export default function Domicilio(props) {
   const [modalComanda, setModalComanda] = useState(false);
   const [modalPagar, setmodalPagar] = useState(false);
   const [modalinfo, setModalinfo] = useState(false);
+  const [reasignarModal, setReasignarModal] = useState(false);
 
   useEffect(() => {
     loadcuentas();
@@ -40,7 +42,8 @@ export default function Domicilio(props) {
 
   const loadcuentas = async () => {
     const data = await axios.get(
-      apiURI + "/cuentas/abierto/" + fechaActual(Date.now()));
+      apiURI + "/cuentas/abierto/" + fechaActual(Date.now())
+    );
     //const cuentasAbiertas = data.data.filter(cuenta=>cuenta.estado==="abierto");
     const _cuentas = data.data.filter(
       (cuenta) => cuenta.servicio === "domicilio"
@@ -50,7 +53,7 @@ export default function Domicilio(props) {
 
   const selectCuenta = async (id) => {
     // const result = cuentas.find((cuenta) => cuenta.id === id);
-    const res = await axios.get(apiURI+"/cuentas/"+id);
+    const res = await axios.get(apiURI + "/cuentas/" + id);
     if (res.data) {
       setCuenta(res.data);
       document.title = `MAyLU - ${res.data.torreta} - $${res.data.total}.00`;
@@ -86,7 +89,7 @@ export default function Domicilio(props) {
   };
 
   const reabrir = async () => {
-    if(operadorRol==="master") {
+    if (operadorRol === "master") {
       if (window.confirm("CONFIRMAR ACCIÓN")) {
         const data = {
           ...cuenta,
@@ -131,7 +134,7 @@ export default function Domicilio(props) {
 
   const handleDscto = async (e) => {
     e.preventDefault();
-    if(operadorRol==="master") {
+    if (operadorRol === "master") {
       if (window.confirm("CONFIRMAR ACCIÓN") && cuenta.id) {
         const data = {
           ...cuenta,
@@ -139,7 +142,10 @@ export default function Domicilio(props) {
           total: processImporte.totalItems(cuenta.items, dscto.dscto).total,
         };
         const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-        await commit("ha aplicado un descuento en la orden: "+cuenta.orden,operadorSession);
+        await commit(
+          "ha aplicado un descuento en la orden: " + cuenta.orden,
+          operadorSession
+        );
         setCuenta(res.data);
         // loadcuentas();
         setDscto({ dscto: 0 });
@@ -153,14 +159,14 @@ export default function Domicilio(props) {
   };
 
   const cancelarCuenta = async () => {
-    if(operadorRol==="master") {
+    if (operadorRol === "master") {
       if (window.confirm("CONFIRMAR ACCIÓN")) {
         const data = {
           ...cuenta,
           estado: "cancelado",
         };
         await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-        await commit("ha cancelado la orden: "+cuenta.orden,operadorSession);
+        await commit("ha cancelado la orden: " + cuenta.orden, operadorSession);
         setCuenta(cuentaConstructor);
         loadcuentas();
       }
@@ -168,6 +174,14 @@ export default function Domicilio(props) {
       alert("!DENEGADO!\nEsta acción requiere supervisión");
     }
   };
+
+  const reasignar = () => {
+    if(cuenta.id) {
+      setReasignarModal(true);
+    } else {
+      alert("Selecciona una cuenta para continuar");
+    }
+  }
 
   return (
     <div className="row">
@@ -216,7 +230,11 @@ export default function Domicilio(props) {
           <div className="card-body p-1 contenedor-scroll-y">
             <div className="list-group">
               {cuentas.map((cuenta) => (
-                <CuentaItem key={cuenta.id} cuenta={cuenta} selectCuenta={selectCuenta} />
+                <CuentaItem
+                  key={cuenta.id}
+                  cuenta={cuenta}
+                  selectCuenta={selectCuenta}
+                />
               ))}
             </div>
           </div>
@@ -237,30 +255,13 @@ export default function Domicilio(props) {
             >
               Reabrir
             </button>
-            {/* <form
-              className="form-inline"
-              onSubmit={handleEditar}
-              disabled={cuenta.impreso ? true : false}
+            <button
+              onClick={reasignar}
+              type="button"
+              className="btn btn-warning mr-1 font-weight-bold"
             >
-              <div className="form-group">
-                <input
-                  type="text"
-                  className="form-control form-control-lg input-editar"
-                  name="torreta"
-                  value={valueedit.torreta}
-                  onChange={onValueEdit}
-                  placeholder="nombre"
-                  required
-                  autoComplete="off"
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn btn-warning btn-lg font-weight-bold"
-              >
-                {">"}
-              </button>
-            </form> */}
+              Reasignar
+            </button>
           </div>
         </div>
       </div>
@@ -454,6 +455,14 @@ export default function Domicilio(props) {
         show={modalinfo}
         onHide={() => setModalinfo(false)}
         cuenta={cuenta}
+      />
+      <ReasignarClienteModal
+        show={reasignarModal}
+        onHide={() => setReasignarModal(false)}
+        cuenta={cuenta}
+        cuentas={cuentas}
+        setCuentas={setCuentas}
+        setCuenta={setCuenta}
       />
     </div>
   );
