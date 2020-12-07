@@ -232,7 +232,7 @@ export default function CapturaModal(props) {
   const handleMiscelaneo = (e) => {
     e.preventDefault();
     const cant = parseInt(contador),
-      importe = cant * parseInt(miscelaneo.price),
+      importe = parseInt(cant) * parseInt(miscelaneo.price),
       price = parseInt(miscelaneo.price);
 
     const data = {
@@ -246,6 +246,7 @@ export default function CapturaModal(props) {
       contable: false,
       createdAt: fechaISO(),
       createdBy: operadorSession,
+      cancelado: false,
     };
     setItems([...items, data]);
   };
