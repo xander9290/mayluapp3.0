@@ -2,7 +2,7 @@ import { Modal } from "react-bootstrap";
 import { formatDate, operadorSession } from "../../helpers";
 
 export default function DetalladoModal(props) {
-  const { fechas, productos } = props;
+  const { fechas, productos, miscelaneo } = props;
   const closeModal = () => {
     props.onHide();
   };
@@ -76,6 +76,23 @@ export default function DetalladoModal(props) {
                     <td valign="top">{p.cant}</td>
                     <td>{p.name}</td>
                     <td valign="top">${p.importe}</td>
+                  </tr>
+                );
+              })}
+              <tr>
+                <td></td>
+                <td>
+                  <h4>----Miscelaneos----</h4>
+                </td>
+                <td></td>
+              </tr>
+              {miscelaneo.map((m) => {
+                total += m.importe;
+                return (
+                  <tr>
+                    <td valign="top">{m.cant}</td>
+                    <td>{m.name}</td>
+                    <td valign="top">${m.importe}</td>
                   </tr>
                 );
               })}

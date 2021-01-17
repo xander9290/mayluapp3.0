@@ -31,6 +31,7 @@ export default function Monitor(props) {
   const [cancelados, setCancelados] = useState([]);
   const [descuentos, setDescuentos] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [miscelaneo, setMiscelaneo] = useState([]);
   const [resumenmodal, setResumenmodal] = useState(false);
   const [detalladomodal, setDetalladomodal] = useState(false);
 
@@ -53,7 +54,9 @@ export default function Monitor(props) {
       resultCajas = data[1].data.filter((data) => {
         return data.fecha >= fechas.gte && data.fecha <= fechas.lte;
       });
-    const cuentasContables = resultCuentas.filter(cuentas=>cuentas.estado !== "cancelado");
+    const cuentasContables = resultCuentas.filter(
+      (cuentas) => cuentas.estado !== "cancelado"
+    );
     procesarServicios(cuentasContables);
     procesarTarjetas(resultCuentas);
     procesarCaja(resultCajas);
@@ -77,12 +80,26 @@ export default function Monitor(props) {
         items.push(item);
       });
     });
+    // get miscelaneos
+    const miscelaneos = items.filter(
+      (item) =>
+        item.producto_id === null &&
+        item.contable === false &&
+        item.cancelado === false
+    );
+    const itemsContables = items.filter((item) => item.contable === true);
+    const itemsVisibles = itemsContables.filter(
+      (item) => item.cancelado === false
+    );
     productos.map((producto) => {
-      const contables = items.filter(
-        (item) =>
-          item.producto_id === producto.id &&
-          item.contable === true &&
-          item.cancelado === false
+      // const contables = items.filter(
+      //   (item) =>
+      //     item.producto_id === producto.id &&
+      //     item.contable === true &&
+      //     item.cancelado === false
+      // );
+      const contables = itemsVisibles.filter(
+        (item) => item.producto_id === producto.id
       );
       if (contables.length > 0) {
         let cant = 0,
@@ -99,6 +116,7 @@ export default function Monitor(props) {
       }
     });
     setProductos(list);
+    setMiscelaneo(miscelaneos);
   };
 
   const procesarTarjetas = (data) => {
@@ -309,6 +327,7 @@ export default function Monitor(props) {
         onHide={() => setDetalladomodal(false)}
         fechas={fechas}
         productos={productos}
+        miscelaneo={miscelaneo}
       />
     </div>
   );

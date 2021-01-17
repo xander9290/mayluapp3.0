@@ -256,13 +256,13 @@ export default function CapturaModal(props) {
     items.map((items) => {
       newItems.push(items);
     });
-    
+
     const data = {
-        ...cuenta,
-        items: newItems,
-       importe: processImporte.totalItems(newItems,cuenta.dscto).importe,
-       total: processImporte.totalItems(newItems,cuenta.dscto).total
-      }
+      ...cuenta,
+      items: newItems,
+      importe: processImporte.totalItems(newItems, cuenta.dscto).importe,
+      total: processImporte.totalItems(newItems, cuenta.dscto).total,
+    };
     const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
     setCuenta(res.data);
     await commit(
@@ -426,9 +426,7 @@ export default function CapturaModal(props) {
                           onClick={() => selectItem(i)}
                           className={itemIndex === i ? "bg-info" : ""}
                         >
-                          <td className="text-center">
-                            {item.cant}
-                          </td>
+                          <td className="text-center">{item.cant}</td>
                           <td>
                             <p className="m-0 p-0">{item.name}</p>
                             {!item.modificadores
@@ -442,15 +440,9 @@ export default function CapturaModal(props) {
                                   </small>
                                 ))}
                           </td>
-                          <td>
-                            ${item.importe}
-                          </td>
-                          <td>
-                            ${item.price}
-                          </td>
-                          <td>
-                            -${item.dscto}
-                          </td>
+                          <td>${item.importe}</td>
+                          <td>${item.price}</td>
+                          <td>-${item.dscto}</td>
                         </tr>
                       ))}
                 </tbody>
