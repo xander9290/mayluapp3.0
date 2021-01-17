@@ -53,7 +53,8 @@ export default function Monitor(props) {
       resultCajas = data[1].data.filter((data) => {
         return data.fecha >= fechas.gte && data.fecha <= fechas.lte;
       });
-    procesarServicios(resultCuentas);
+    const cuentasContables = resultCuentas.filter(cuentas=>cuentas.estado !== "cancelado");
+    procesarServicios(cuentasContables);
     procesarTarjetas(resultCuentas);
     procesarCaja(resultCajas);
     const _cancelados = resultCuentas.filter(
