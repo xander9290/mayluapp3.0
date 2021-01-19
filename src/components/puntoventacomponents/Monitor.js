@@ -115,7 +115,11 @@ export default function Monitor(props) {
         });
       }
     });
-    setProductos(list);
+    setProductos(
+      list.sort((a, b) => {
+        if (a.name < b.name) return -1;
+      })
+    );
     setMiscelaneo(miscelaneos);
   };
 
