@@ -79,13 +79,17 @@ export default function DetalladoModal(props) {
                   </tr>
                 );
               })}
-              <tr>
+              {
+                miscelaneo.length===0?null:(
+                  <tr>
                 <td></td>
                 <td>
-                  <h4>----Miscelaneos----</h4>
+                  <h4>---Miscelaneos---</h4>
                 </td>
                 <td></td>
               </tr>
+                )
+              }
               {miscelaneo.map((m) => {
                 total += m.importe;
                 return (
