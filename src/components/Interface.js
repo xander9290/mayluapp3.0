@@ -35,7 +35,7 @@ function Nav() {
     setInterval(() => {
       const [string] = clockTime();
       setClock(string);
-      if (string >= "02:00 p.m." && string <= "09:30 p.m.") {
+      if (string >= "2:00 p.m." && string <= "9:30 p.m.") {
         setAbierto(true);
       } else {
         setAbierto(false);
