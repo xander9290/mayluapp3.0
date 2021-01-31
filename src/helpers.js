@@ -41,6 +41,19 @@ export const commit = async (commit, operador) => {
   });
 };
 
+export const clockTime = () => {
+  let string = "";
+  const date = new Date();
+  const hora = date.getHours();
+  const min = date.getMinutes();
+  // const sec = date.getSeconds();
+
+  string = `${hora > 12 ? hora - 12 : hora}:${min < 10 ? "0" + min : min} ${
+    hora > 12 ? "p.m." : "a.m."
+  }`;
+  return [string, min];
+};
+
 export const cuentaConstructor = {
   folio: null,
   orden: null,
@@ -54,9 +67,9 @@ export const cuentaConstructor = {
       calle: "",
       cruces: "",
       colonia: "",
-      obs: ""
+      obs: "",
     },
-    id: null
+    id: null,
   },
   estado: "abierto",
   impreso: false,
@@ -75,15 +88,15 @@ export const cuentaConstructor = {
 };
 
 export const processImporte = {
-  totalItems: function (list = [],dscto) {
-    const listFilter = list.filter(item=>item.cancelado===false);
+  totalItems: function (list = [], dscto) {
+    const listFilter = list.filter((item) => item.cancelado === false);
     let total = 0;
     listFilter.map((item) => {
       total += item.importe;
     });
     let totalCuenta = total - parseInt(dscto);
     return { importe: total, total: totalCuenta };
-  }
+  },
 };
 
 export const numeroALetras = (function () {
@@ -286,4 +299,3 @@ export const numeroALetras = (function () {
       );
   };
 })();
-

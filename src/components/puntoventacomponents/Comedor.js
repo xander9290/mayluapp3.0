@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   fechaActual,
@@ -48,14 +48,17 @@ export default function Comedor(props) {
     setCuentas(_cuentas);
   };
 
-  const selectCuenta = async (id) => {
-    // const result = cuentas.find((cuenta) => cuenta.id === id);
-    const res = await axios.get(apiURI + "/cuentas/" + id);
-    if (res.data) {
-      setCuenta(res.data);
-      document.title = `MAyLU - ${res.data.torreta} - $${res.data.total}.00`;
-    }
-  };
+  const selectCuenta = useCallback(
+    async (id) => {
+      // const result = cuentas.find((cuenta) => cuenta.id === id);
+      const res = await axios.get(apiURI + "/cuentas/" + id);
+      if (res.data) {
+        setCuenta(res.data);
+        document.title = `MAyLU - ${res.data.torreta} - $${res.data.total}.00`;
+      }
+    },
+    [cuenta]
+  );
 
   const onValueEdit = (e) => {
     setValueedit({ ...valueedit, [e.target.name]: e.target.value });
@@ -98,7 +101,7 @@ export default function Comedor(props) {
     }
   };
 
-  const imprimir = async () => {
+  const imprimir = useCallback(async () => {
     if (cuenta.items.length > 0) {
       if (cuenta.id) {
         const data = {
@@ -116,9 +119,9 @@ export default function Comedor(props) {
     } else {
       alert("LA CUENTA ESTÁ VACÍA");
     }
-  };
+  }, [cuenta]);
 
-  const reabrir = async () => {
+  const reabrir = useCallback(async () => {
     if (operadorRol === "master") {
       if (window.confirm("CONFIRMAR ACCIÓN")) {
         const data = {
@@ -134,29 +137,32 @@ export default function Comedor(props) {
     } else {
       alert("DENEGADO!\nEsta operación requiere supervisión");
     }
-  };
+  }, [cuenta]);
 
-  const deleteItem = async (idx, importe) => {
-    if (window.confirm("CONFIRMAR ACCIÓN")) {
-      let list = cuenta.items;
-      // list.splice(idx, 1);
-      list[idx].cancelado = true;
-      list[idx].importe = 0;
-      const data = {
-        ...cuenta,
-        items: list,
-        importe: processImporte.totalItems(list, cuenta.dscto).importe,
-        total: processImporte.totalItems(list, cuenta.dscto).total,
-      };
-      const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
-      commit(
-        "ha cancelado un producto de la cuenta " + cuenta.orden,
-        operadorSession
-      );
-      setCuenta(res.data);
-      // loadcuentas();
-    }
-  };
+  const deleteItem = useCallback(
+    async (idx, importe) => {
+      if (window.confirm("CONFIRMAR ACCIÓN")) {
+        let list = cuenta.items;
+        // list.splice(idx, 1);
+        list[idx].cancelado = true;
+        list[idx].importe = 0;
+        const data = {
+          ...cuenta,
+          items: list,
+          importe: processImporte.totalItems(list, cuenta.dscto).importe,
+          total: processImporte.totalItems(list, cuenta.dscto).total,
+        };
+        const res = await axios.put(apiURI + "/cuentas/" + cuenta.id, data);
+        commit(
+          "ha cancelado un producto de la cuenta " + cuenta.orden,
+          operadorSession
+        );
+        setCuenta(res.data);
+        // loadcuentas();
+      }
+    },
+    [cuenta]
+  );
 
   const onDscto = (e) => {
     setDscto({ ...dscto, [e.target.name]: e.target.value });
@@ -488,7 +494,7 @@ export default function Comedor(props) {
   );
 }
 
-function CuentaItem(props) {
+const CuentaItem = memo((props) => {
   const { cuenta, selectCuenta } = props;
 
   const [bg, setBg] = useState(
@@ -530,4 +536,4 @@ function CuentaItem(props) {
       </small>
     </button>
   );
-}
+});

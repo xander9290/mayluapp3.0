@@ -1,5 +1,11 @@
-import { Fragment } from "react";
-import { operadorSession, operadorRol, fechaActual, commit } from "../helpers";
+import { Fragment, useState, useEffect } from "react";
+import {
+  operadorSession,
+  operadorRol,
+  fechaActual,
+  commit,
+  clockTime,
+} from "../helpers";
 
 import Puntoventa from "./Puntoventa";
 import Config from "./Config";
@@ -22,9 +28,22 @@ export default function Interface() {
 }
 
 function Nav() {
+  const [clock, setClock] = useState("");
+  const [salida, setSalida] = useState(false);
+
+  useEffect(() => {
+    setInterval(() => {
+      const [string, min] = clockTime();
+      setClock(string);
+      if (string >= "09:30 p.m.") {
+        setSalida(true);
+      }
+    }, 1000);
+  }, []);
+
   const logout = (e) => {
     e.preventDefault();
-    commit("ha cerrado sesion",operadorSession);
+    commit("ha cerrado sesion", operadorSession);
     window.sessionStorage.clear();
     window.location.href = window.location.href;
   };
@@ -54,6 +73,13 @@ function Nav() {
           </a>
         </li>
       </ul>
+      {salida ? (
+        <span className="h4 text-light bg-danger px-3 border border-danger">
+          {clock} {"cerrado"}
+        </span>
+      ) : (
+        <span className="h3 text-light">{clock}</span>
+      )}
       <small>
         <ul className="list-group list-group-horizontal">
           <li className="list-group-item">
@@ -80,7 +106,10 @@ function Nav() {
 function Main() {
   return (
     <div className="tab-content main">
-      <div className="tab-pane fade show active container-fluid" id="puntoventa">
+      <div
+        className="tab-pane fade show active container-fluid"
+        id="puntoventa"
+      >
         <Puntoventa />
       </div>
       <div className="tab-pane fade container-fluid" id="config">
