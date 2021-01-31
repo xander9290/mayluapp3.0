@@ -29,16 +29,16 @@ export default function Interface() {
 
 function Nav() {
   const [clock, setClock] = useState("");
-  const [salida, setSalida] = useState(false);
+  const [abierto, setAbierto] = useState(true);
 
   useEffect(() => {
     setInterval(() => {
-      const [string, min] = clockTime();
+      const [string] = clockTime();
       setClock(string);
-      if (string >= "09:30 p.m.") {
-        setSalida(true);
+      if (string >= "02:00 p.m." && string <= "09:30 p.m.") {
+        setAbierto(true);
       } else {
-        setSalida(false);
+        setAbierto(false);
       }
     }, 1000);
   }, []);
@@ -75,12 +75,14 @@ function Nav() {
           </a>
         </li>
       </ul>
-      {salida ? (
-        <span className="h4 text-light bg-danger px-3 border border-danger">
+      {!abierto ? (
+        <span className="h4 text-light bg-danger border rounded border-light px-3">
           {clock} {"cerrado"}
         </span>
       ) : (
-        <span className="h3 text-light">{clock}</span>
+        <span className="h4 text-dark bg-light border rounded px-3">
+          {clock} {"abierto"}
+        </span>
       )}
       <small>
         <ul className="list-group list-group-horizontal">

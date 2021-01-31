@@ -51,7 +51,7 @@ export const clockTime = () => {
   string = `${hora > 12 ? hora - 12 : hora}:${min < 10 ? "0" + min : min} ${
     hora > 12 ? "p.m." : "a.m."
   }`;
-  return [string, min];
+  return [string];
 };
 
 export const cuentaConstructor = {
