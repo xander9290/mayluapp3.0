@@ -37,6 +37,8 @@ function Nav() {
       setClock(string);
       if (string >= "09:30 p.m.") {
         setSalida(true);
+      } else {
+        setSalida(false);
       }
     }, 1000);
   }, []);
