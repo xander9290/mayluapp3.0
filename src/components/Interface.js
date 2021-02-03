@@ -11,6 +11,21 @@ import Puntoventa from "./Puntoventa";
 import Config from "./Config";
 
 export default function Interface() {
+  useEffect(() => {
+    window.addEventListener("beforeunload", function (e) {
+      e.preventDefault();
+      e.returnValue = "";
+    });
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    return () => {
+      window.removeEventListener("beforeunload", function (e) {
+        e.preventDefault();
+        e.returnValue = "";
+      });
+      document.removeEventListener("contextmenu", (e) => e.preventDefault());
+    };
+  }, []);
   return (
     <Fragment>
       <div className="row">
@@ -35,7 +50,11 @@ function Nav() {
     setInterval(() => {
       const [string] = clockTime();
       setClock(string);
-      if (string >= "2:00 p.m." && string <= "9:30 p.m.") {
+      if (
+        string >= "2:00 p.m." &&
+        string <= "9:30 p.m." &&
+        string <= "0:00 a.m."
+      ) {
         setAbierto(true);
       } else {
         setAbierto(false);
